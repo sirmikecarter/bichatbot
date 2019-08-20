@@ -1,0 +1,18 @@
+{
+    "name": "bichatbot",
+    "description": "",
+    "services": [
+        {
+            "type": "endpoint",
+            "appId": "01c8d7be-adab-47ee-9a74-3dec3afbd315",
+            "appPassword": "X7??uF936Crx/aQYl%foDYf(ikz2?>",
+            "endpoint": "http://localhost:3978/api/messages",
+            "id": "086d20b0-c36a-11e9-b293-d970c1a3c48c",
+            "name": "http://localhost:3978/api/messages"
+        }
+    ],
+    "padlock": "",
+    "version": "2.0",
+    "overrides": null,
+    "path": "C:\\Users\\MCarter.ITSRND0\\Desktop\\bichatbot\\bichatbot.bot"
+}
