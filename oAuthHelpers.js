@@ -53,7 +53,8 @@ class OAuthHelpers {
         const client = new SimpleGraphClient(tokenResponse.token);
         const me = await client.getMe();
 
-        await context.sendActivity(`You are ${ me.displayName }.`);
+        await context.sendActivity(`You are: ${ me.displayName }`);
+        await context.sendActivity(`You're department is: ${ me.jobTitle }`);
     }
 
     /**

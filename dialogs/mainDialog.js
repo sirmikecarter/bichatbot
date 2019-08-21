@@ -91,6 +91,8 @@ class MainDialog extends LogoutDialog {
 
                 const command = parts[0];
 
+                console.log(parts[0])
+
                 switch (command) {
                 case 'me':
                     await OAuthHelpers.listMe(step.context, tokenResponse);
