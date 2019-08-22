@@ -1,0 +1,36 @@
+{
+"$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+"type": "AdaptiveCard",
+"version": "1.0",
+"body": [
+{
+"type": "Image",
+"url": "https://gateway.ipfs.io/ipfs/QmV4aYRbmS3BRbDdXUkXEFRyVw1F1TiJvKpgQWARFX14yy",
+"size": "large"
+},
+{
+"type": "TextBlock",
+"spacing":"medium",
+"size": "default",
+"weight":"bolder",
+"text": "Hello, this is BI-8900 - your Business Intelligence assistant.",
+"wrap": true,
+"maxLines": 0
+},
+{
+"type": "TextBlock",
+"size": "default",
+"isSubtle": "yes",
+"text": "I'm programmed to assit you with your Data Governance needs.",
+"wrap": true,
+"maxLines": 0
+}
+],
+"actions": [
+{
+"type": "Action.Submit",
+"title": "Sign-In",
+"data": "Sign-In"
+}
+]
+}

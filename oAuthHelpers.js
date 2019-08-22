@@ -1,8 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-const { AttachmentLayoutTypes, CardFactory } = require('botbuilder');
+const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder');
+const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog, ChoiceFactory } = require('botbuilder-dialogs');
 const { SimpleGraphClient } = require('./simple-graph-client');
+
+const CHOICE_PROMPT = 'choicePrompt';
 
 /**
  * These methods call the Microsoft Graph API. The following OAuth scopes are used:
@@ -55,6 +58,11 @@ class OAuthHelpers {
 
         await context.sendActivity(`You are: ${ me.displayName }`);
         await context.sendActivity(`You're department is: ${ me.jobTitle }`);
+
+        var reply = MessageFactory.suggestedActions(['Main Menu']);
+        await context.sendActivity(reply);
+
+
     }
 
     /**

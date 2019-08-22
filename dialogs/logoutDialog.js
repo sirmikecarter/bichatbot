@@ -3,6 +3,7 @@
 
 const { ActivityTypes } = require('botbuilder');
 const { ComponentDialog } = require('botbuilder-dialogs');
+const { DialogHelper } = require('./dialogHelper');
 
 class LogoutDialog extends ComponentDialog {
     async onBeginDialog(innerDc, options) {
@@ -30,8 +31,16 @@ class LogoutDialog extends ComponentDialog {
                 // The bot adapter encapsulates the authentication processes.
                 const botAdapter = innerDc.context.adapter;
                 await botAdapter.signOutUser(innerDc.context, process.env.ConnectionName);
-                await innerDc.context.sendActivity('You have been signed out.');
+
+                await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You have been signed out.','')] });
+
+                //await innerDc.context.sendActivity('You have been signed out.');
                 return await innerDc.cancelAllDialogs();
+            }
+
+            if (text === 'menu') {
+              console.log(text)
+
             }
         }
     }
