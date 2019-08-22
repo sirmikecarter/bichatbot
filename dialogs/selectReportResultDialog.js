@@ -205,10 +205,10 @@ class SelectReportResultDialog {
 
         await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
-        var reply = MessageFactory.suggestedActions(['Who Am I?', 'Business Glossary', 'Reports']);
-        await turnContext.sendActivity(reply);
+        var reply = MessageFactory.suggestedActions(['Main Menu']);
+        return await turnContext.sendActivity(reply);
 
-
+        //return await turnContext.endDialog('End Dialog');
 
     }
 };

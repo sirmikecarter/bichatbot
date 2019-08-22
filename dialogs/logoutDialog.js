@@ -1,9 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
+const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog, ChoiceFactory } = require('botbuilder-dialogs');
 
 const { ActivityTypes } = require('botbuilder');
 const { ComponentDialog } = require('botbuilder-dialogs');
 const { DialogHelper } = require('./dialogHelper');
+
+const CHOICE_PROMPT = 'choicePrompt';
 
 class LogoutDialog extends ComponentDialog {
     async onBeginDialog(innerDc, options) {
@@ -33,6 +36,11 @@ class LogoutDialog extends ComponentDialog {
                 await botAdapter.signOutUser(innerDc.context, process.env.ConnectionName);
 
                 await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You have been signed out.','')] });
+
+                return await innerDc.prompt(CHOICE_PROMPT, {
+                    prompt: '',
+                    choices: ChoiceFactory.toChoices(['Log In'])
+                });
 
                 //await innerDc.context.sendActivity('You have been signed out.');
                 return await innerDc.cancelAllDialogs();

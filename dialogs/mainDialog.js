@@ -85,7 +85,7 @@ class MainDialog extends LogoutDialog {
 
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: '',
-                choices: ChoiceFactory.toChoices(['Who Am I?', 'Business Glossary', 'Reports'])
+                choices: ChoiceFactory.toChoices(['Who Am I?', 'Business Glossary', 'View Reports'])
             });
             //return await step.prompt(TEXT_PROMPT, { prompt: 'Would you like to do? (type \'me\', \'send <EMAIL>\' or \'recent\')' });
           }
@@ -153,7 +153,7 @@ class MainDialog extends LogoutDialog {
                 case 'Business Glossary':
                     await this.selectReportDialog.destinationStep(step);
                     break;
-                case 'Reports':
+                case 'View Reports':
                     await this.selectReportDialog.destinationStep(step);
                     break;
                 default:
