@@ -37,7 +37,7 @@ class LogoutDialog extends ComponentDialog {
 
                 await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You have been signed out.','')] });
 
-                return await innerDc.prompt(CHOICE_PROMPT, {
+                await innerDc.prompt(CHOICE_PROMPT, {
                     prompt: '',
                     choices: ChoiceFactory.toChoices(['Log In'])
                 });
