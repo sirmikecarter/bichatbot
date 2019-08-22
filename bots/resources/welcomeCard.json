@@ -29,8 +29,8 @@
 "actions": [
 {
 "type": "Action.Submit",
-"title": "Sign-In",
-"data": "Sign-In"
+"title": "Log in",
+"data": "Log in"
 }
 ]
 }

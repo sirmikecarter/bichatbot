@@ -24,8 +24,8 @@ class MainDialog extends LogoutDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
                 connectionName: process.env.ConnectionName,
-                text: 'Please login and enter the validation code into this chat window to complete the sign-in process',
-                title: 'Login',
+                text: 'Please log in and enter the validation code into this chat window to complete the log in process',
+                title: 'Log in',
                 timeout: 300000
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
