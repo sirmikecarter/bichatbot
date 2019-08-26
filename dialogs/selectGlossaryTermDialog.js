@@ -2,6 +2,7 @@ const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt,
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { DialogHelper } = require('./dialogHelper');
+const { SimpleGraphClient } = require('../simple-graph-client');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -10,7 +11,7 @@ const WATERFALL_DIALOG = 'waterfallDialog';
 
 const axios = require('axios');
 
-class SelectReportDialog extends CancelAndHelpDialog {
+class SelectGlossaryTermDialog extends CancelAndHelpDialog {
     constructor(id) {
         super(id || 'selectReportDialog');
 
@@ -61,10 +62,16 @@ class SelectReportDialog extends CancelAndHelpDialog {
     /**
      * If a destination city has not been provided, prompt for one.
      */
-    async destinationStep(stepContext) {
+    async destinationStep(stepContext, tokenResponse) {
 
       var self = this;
       self.state.reportNameSearch = []
+
+      const client = new SimpleGraphClient(tokenResponse.token);
+      const me = await client.getMe();
+
+      console.log(`You are: ${ me.displayName }`);
+      console.log(`You're department is: ${ me.jobTitle }`);
 
       await axios.get(process.env.SearchService +'/indexes/'+ process.env.SearchServiceIndex + '/docs?',
             { params: {
@@ -102,7 +109,7 @@ class SelectReportDialog extends CancelAndHelpDialog {
                console.log(error);
         });
 
-      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard(this.state.reportNameSearch, 'report_name_selector_value')] });
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard(this.state.reportNameSearch, 'glossary_term_selector_value')] });
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
@@ -114,4 +121,4 @@ class SelectReportDialog extends CancelAndHelpDialog {
 
 }
 
-module.exports.SelectReportDialog = SelectReportDialog;
+module.exports.SelectGlossaryTermDialog = SelectGlossaryTermDialog;

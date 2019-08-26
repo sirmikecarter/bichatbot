@@ -4,6 +4,7 @@ const { QnAMaker } = require('botbuilder-ai');
 const { LuisHelper } = require('./luisHelper');
 const { LuisRecognizer } = require('botbuilder-ai');
 const { DialogHelper } = require('./dialogHelper');
+const { SimpleGraphClient } = require('../simple-graph-client');
 const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const axios = require('axios');
@@ -15,7 +16,7 @@ const QNA_TOP_N = 1;
 const QNA_CONFIDENCE_THRESHOLD = 0.5;
 
 
-class SelectReportResultDialog {
+class SelectGlossaryTermResultDialog {
     /**
      *
 
@@ -23,6 +24,7 @@ class SelectReportResultDialog {
     constructor() {
 
         this.dialogHelper = new DialogHelper();
+
 
         this.state = {
           reportNameSearch: [],
@@ -52,11 +54,17 @@ class SelectReportResultDialog {
      *
      * @param {TurnContext} turn context object
      */
-    async onTurn(turnContext) {
+    async onTurn(turnContext, tokenResponse) {
         // Call QnA Maker and get results.
         //console.log(turnContext.activity.value.report_name_selector_value)
 
-        var reportnamequery = "'" + turnContext.activity.value.report_name_selector_value + "'"
+        var reportnamequery = "'" + turnContext.activity.value.glossary_term_selector_value + "'"
+
+        const client = new SimpleGraphClient(tokenResponse.token);
+        const me = await client.getMe();
+
+        console.log(`You are: ${ me.displayName }`);
+        console.log(`You're department is: ${ me.jobTitle }`);
 
         var self = this;
 
@@ -213,4 +221,4 @@ class SelectReportResultDialog {
     }
 };
 
-module.exports.SelectReportResultDialog = SelectReportResultDialog;
+module.exports.SelectGlossaryTermResultDialog = SelectGlossaryTermResultDialog;

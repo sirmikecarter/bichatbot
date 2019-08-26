@@ -59,7 +59,7 @@ class OAuthHelpers {
         await context.sendActivity(`You are: ${ me.displayName }`);
         await context.sendActivity(`You're department is: ${ me.jobTitle }`);
 
-        var reply = MessageFactory.suggestedActions(['Main Menu']);
+        var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
         await context.sendActivity(reply);
 
 

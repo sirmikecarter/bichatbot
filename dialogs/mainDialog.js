@@ -14,6 +14,8 @@ const TEXT_PROMPT = 'textPrompt';
 const { DialogHelper } = require('./dialogHelper');
 const { SelectReportDialog } = require('./selectReportDialog');
 const { SelectReportResultDialog } = require('./selectReportResultDialog');
+const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
+const { SelectGlossaryTermResultDialog } = require('./selectGlossaryTermResultDialog');
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
 
 class MainDialog extends LogoutDialog {
@@ -24,8 +26,8 @@ class MainDialog extends LogoutDialog {
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
                 connectionName: process.env.ConnectionName,
-                text: 'Please log in and enter the validation code into this chat window to complete the log in process',
-                title: 'Log In',
+                text: 'Please log in with your credentials and enter the validation code into this chat window to complete the log in process',
+                title: 'Log In with My Credentials',
                 timeout: 300000
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
@@ -40,6 +42,8 @@ class MainDialog extends LogoutDialog {
         this.dialogHelper = new DialogHelper();
         this.selectReportDialog = new SelectReportDialog();
         this.selectReportResultDialog = new SelectReportResultDialog();
+        this.selectGlossaryTermDialog = new SelectGlossaryTermDialog();
+        this.selectGlossaryTermResultDialog = new SelectGlossaryTermResultDialog();
     }
 
     /**
@@ -77,6 +81,11 @@ class MainDialog extends LogoutDialog {
               await this.selectReportResultDialog.onTurn(step.context);
             }
 
+            if (step.context.activity.value.action === 'glossary_term_selector_value'){
+
+              await this.selectGlossaryTermResultDialog.onTurn(step.context, tokenResponse);
+            }
+
               //console.log(step.context.activity.value.action)
               return await step.endDialog();
           }else{
@@ -85,7 +94,7 @@ class MainDialog extends LogoutDialog {
 
             return await step.prompt(CHOICE_PROMPT, {
                 prompt: '',
-                choices: ChoiceFactory.toChoices(['Who Am I?', 'Business Glossary', 'View Reports'])
+                choices: ChoiceFactory.toChoices(['Who Am I?', 'Business Glossary', 'View Archer Reports'])
             });
             //return await step.prompt(TEXT_PROMPT, { prompt: 'Would you like to do? (type \'me\', \'send <EMAIL>\' or \'recent\')' });
           }
@@ -151,9 +160,9 @@ class MainDialog extends LogoutDialog {
                     await OAuthHelpers.listRecentMail(step.context, tokenResponse);
                     break;
                 case 'Business Glossary':
-                    await this.selectReportDialog.destinationStep(step);
+                    await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse);
                     break;
-                case 'View Reports':
+                case 'View Archer Reports':
                     await this.selectReportDialog.destinationStep(step);
                     break;
                 default:
