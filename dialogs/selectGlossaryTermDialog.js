@@ -122,7 +122,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
       var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
       await stepContext.context.sendActivity(reply);
 
-      return await stepContext.endDialog('End Dialog');
+      //return await stepContext.endDialog('End Dialog');
     }
 
 }
