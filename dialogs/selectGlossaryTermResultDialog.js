@@ -9,23 +9,14 @@ const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt,
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const axios = require('axios');
 
-// Name of the QnA Maker service in the .bot file.
 const QNA_CONFIGURATION = 'q_sample-qna';
-// CONSTS used in QnA Maker query. See [here](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-qna?view=azure-bot-service-4.0&tabs=cs) for additional info
 const QNA_TOP_N = 1;
 const QNA_CONFIDENCE_THRESHOLD = 0.5;
 
-
 class SelectGlossaryTermResultDialog {
-    /**
-     *
 
-     */
     constructor() {
-
         this.dialogHelper = new DialogHelper();
-
-
         this.state = {
           glossaryTerm: '',
           glossaryDescription: '',
@@ -35,9 +26,9 @@ class SelectGlossaryTermResultDialog {
     }
 
     /**
-     *
      * @param {TurnContext} turn context object
      */
+
     async onTurn(turnContext, tokenResponse) {
         // Call QnA Maker and get results.
         //console.log(turnContext.activity.value.report_name_selector_value)
@@ -66,7 +57,7 @@ class SelectGlossaryTermResultDialog {
 
           if (response){
 
-          self.state.glossaryTerm= response.data.value[0].questions[0]
+          self.state.glossaryTerm= response.data.value[0].questions
           self.state.glossaryDescription = response.data.value[0].answer
           self.state.glossaryDefinedBy = response.data.value[0].metadata_definedby.toUpperCase()
           self.state.glossaryOutput = response.data.value[0].metadata_output.toUpperCase()
