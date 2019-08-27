@@ -27,26 +27,10 @@ class SelectGlossaryTermResultDialog {
 
 
         this.state = {
-          reportNameSearch: [],
-          itemCount: '',
-          reportname: '',
-          description: '',
-          owner: '',
-          designee: '',
-          approver: '',
-          division: '',
-          classification: '',
-          language: '',
-          entities: [],
-          keyPhrases: [],
-          sentiment: '',
-          reportArray: [],
-          reportArrayAnalytics: [],
-          reportArrayFormData: [],
-          reportArrayLanguage: [],
-          reportArrayEntities: [],
-          reportArrayKeyPhrases: [],
-          reportArraySentiment: []
+          glossaryTerm: '',
+          glossaryDescription: '',
+          glossaryDefinedBy: '',
+          glossaryOutput: ''
         };
     }
 
@@ -58,24 +42,23 @@ class SelectGlossaryTermResultDialog {
         // Call QnA Maker and get results.
         //console.log(turnContext.activity.value.report_name_selector_value)
 
-        var reportnamequery = "'" + turnContext.activity.value.glossary_term_selector_value + "'"
+        var glossaryTermQuery = "'" + turnContext.activity.value.glossary_term_selector_value + "'"
 
         const client = new SimpleGraphClient(tokenResponse.token);
         const me = await client.getMe();
 
-        console.log(`You are: ${ me.displayName }`);
-        console.log(`You're department is: ${ me.jobTitle }`);
+        const definedByToken = me.jobTitle.toLowerCase()
 
         var self = this;
 
-        await axios.get(process.env.SearchService +'/indexes/'+ process.env.SearchServiceIndex + '/docs?',
+        await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
                 { params: {
                   'api-version': '2019-05-06',
-                  'search': '*',
-                  '$filter': 'metadata_reportname eq ' + reportnamequery
+                  'search': glossaryTermQuery,
+                  '$filter': 'metadata_definedby eq ' + '\'' + definedByToken + '\''
                   },
                 headers: {
-                  'api-key': process.env.SearchServiceKey,
+                  'api-key': process.env.GlossarySearchServiceKey,
                   'ContentType': 'application/json'
           }
 
@@ -83,13 +66,10 @@ class SelectGlossaryTermResultDialog {
 
           if (response){
 
-           self.state.reportname = response.data.value[0].metadata_reportname
-           self.state.description = response.data.value[0].answer
-           self.state.owner = response.data.value[0].metadata_owner
-           self.state.designee = response.data.value[0].metadata_designee
-           self.state.approver = response.data.value[0].metadata_approver
-           self.state.division = response.data.value[0].metadata_division
-           self.state.classification = response.data.value[0].metadata_classification
+          self.state.glossaryTerm= response.data.value[0].questions[0]
+          self.state.glossaryDescription = response.data.value[0].answer
+          self.state.glossaryDefinedBy = response.data.value[0].metadata_definedby.toUpperCase()
+          self.state.glossaryOutput = response.data.value[0].metadata_output.toUpperCase()
 
          }
 
@@ -97,119 +77,7 @@ class SelectGlossaryTermResultDialog {
                console.log(error);
         });
 
-        //Text Analytics - Body
-        var bodyFormData = {
-           "documents": [
-             {
-               "id": "1",
-               "text": self.state.description
-             }
-           ]
-         }
-        //Text Analytics - Languages
-        await axios({
-           method: 'post',
-           url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/languages',
-           data: bodyFormData,
-           headers: {'Ocp-Apim-Subscription-Key': process.env.TextAnalyticsKey, 'Content-Type': 'application/json'}
-           }).then(response => {
-               //handle success
-               //console.log(response.data.documents[0].detectedLanguages[0].name);
-               self.state.language = response.data.documents[0].detectedLanguages[0].name
-           }).catch((error)=>{
-               //handle error
-             console.log(error.response);
-         });
-         //Text Analytics - Entities
-         await axios({
-            method: 'post',
-            url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/entities',
-            data: bodyFormData,
-            headers: {'Ocp-Apim-Subscription-Key': process.env.TextAnalyticsKey, 'Content-Type': 'application/json'}
-            }).then(response => {
-                //handle success
-
-                self.state.entities = []
-                var itemCount = response.data.documents[0].entities.length
-
-                if(itemCount > 0){
-                  var itemArray = self.state.entities.slice();
-
-                  for (var i = 0; i < itemCount; i++)
-                  {
-                        const itemResult = response.data.documents[0].entities[i].name
-
-                        if (itemArray.indexOf(itemResult) === -1)
-                        {
-                          itemArray.push(itemResult)
-                        }
-                  }
-
-                  self.state.entities = [{'id': 0, 'entities': itemArray }]
-                  //console.log(self.state.entities)
-                }else {
-                  self.state.entities = [{'id': 0, 'entities': '[No Results]' }]
-                }
-
-            }).catch((error)=>{
-                //handle error
-              console.log(error.response);
-          });
-          //Text Analytics - Key Phrases
-          await axios({
-             method: 'post',
-             url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/keyPhrases',
-             data: bodyFormData,
-             headers: {'Ocp-Apim-Subscription-Key': process.env.TextAnalyticsKey, 'Content-Type': 'application/json'}
-             }).then(response => {
-                 //handle success
-
-                 self.state.keyPhrases = []
-
-                 var itemCount = response.data.documents[0].keyPhrases.length
-
-                 if (itemCount > 0){
-                   var itemArray = self.state.keyPhrases.slice();
-
-                   for (var i = 0; i < itemCount; i++)
-                   {
-                         const itemResult = response.data.documents[0].keyPhrases[i]
-
-                         if (itemArray.indexOf(itemResult) === -1)
-                         {
-                           itemArray.push(itemResult)
-                         }
-                   }
-
-                   self.state.keyPhrases = [{'id': 0, 'keyphrases': itemArray }]
-                 }else {
-                   self.state.keyPhrases = [{'id': 0, 'keyphrases': '[No Results]' }]
-                 }
-
-
-
-             }).catch((error)=>{
-                 //handle error
-               console.log(error.response);
-           });
-           //Text Analytics - Sentiment
-           await axios({
-              method: 'post',
-              url: 'https://westus.api.cognitive.microsoft.com/text/analytics/v2.0/sentiment',
-              data: bodyFormData,
-              headers: {'Ocp-Apim-Subscription-Key': process.env.TextAnalyticsKey, 'Content-Type': 'application/json'}
-              }).then(response => {
-                  //handle success
-                  //console.log(response.data.documents[0].score)
-                  self.state.sentiment = String(response.data.documents[0].score)
-
-
-              }).catch((error)=>{
-                  //handle error
-                console.log(error.response);
-            });
-
-        await turnContext.sendActivity({ attachments: [this.dialogHelper.createReportCard(this.state.reportname, this.state.description, this.state.owner, this.state.designee, this.state.approver, this.state.division, this.state.classification, this.state.language, this.state.entities[0].entities, this.state.keyPhrases[0].keyphrases, this.state.sentiment)] });
+        await turnContext.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(me.jobTitle, this.state.glossaryTerm, this.state.glossaryDescription, this.state.glossaryDefinedBy, this.state.glossaryOutput)] });
 
         await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 

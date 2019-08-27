@@ -198,6 +198,68 @@ class DialogHelper {
        });
      }
 
+     createGlossaryCard(division, term, description, definedBy, output) {
+
+     return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+            "type": "TextBlock",
+            "text": division + " Business Glossary",
+            "weight": "bolder",
+            "isSubtle": false
+           },
+           {
+             "type": "TextBlock",
+             "text": term,
+             "weight": "bolder",
+             "size": "medium",
+             "separator": true
+           },
+           {
+             "type": "TextBlock",
+             "text": description,
+             "wrap": true
+           }
+         ],
+         "actions": [
+             {
+               "type": "Action.ShowCard",
+               "title": "Additional Information",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Additional Information",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Defined By:",
+                         "value": definedBy,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Output:",
+                         "value": output,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             }
+           ]
+       });
+     }
+
      createReportCard(title, description, owner, designee, approver, division, classification, language, entities, keyPhrases, sentiment) {
 
      return CardFactory.adaptiveCard({
@@ -206,10 +268,17 @@ class DialogHelper {
          "version": "1.0",
          "body": [
            {
+            "type": "TextBlock",
+            "text": "Archer Reports",
+            "weight": "bolder",
+            "isSubtle": false
+           },
+           {
              "type": "TextBlock",
              "text": title,
              "weight": "bolder",
-             "size": "medium"
+             "size": "medium",
+             "separator": true
            },
            {
              "type": "TextBlock",
@@ -388,7 +457,54 @@ class DialogHelper {
        });
      }
 
-     createComboListCard(choiceList, selectorValue) {
+     createUserCard(picture, name, division) {
+
+     return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+             "type": "ColumnSet",
+             "columns": [
+               {
+                 "type": "Column",
+                 "width": "auto",
+                 "items": [
+                   {
+                     "type": "Image",
+                     "url": picture,
+                     "size": "small",
+                     "style": "person"
+                   }
+                 ]
+               },
+               {
+                 "type": "Column",
+                 "width": "stretch",
+                 "items": [
+                   {
+                     "type": "TextBlock",
+                     "text": name,
+                     "weight": "bolder",
+                     "wrap": true
+                   },
+                    {
+                      "type": "TextBlock",
+                      "spacing": "none",
+                      "text": division,
+                      "isSubtle": true,
+                      "wrap": true
+                    }
+                 ]
+               }
+             ]
+           }
+         ]
+       });
+     }
+
+     createComboListCard(helperText, choiceList, selectorValue) {
 
      return CardFactory.adaptiveCard({
        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -396,10 +512,17 @@ class DialogHelper {
        "version": "1.0",
        "body": [
          {
+          "type": "TextBlock",
+          "text": helperText,
+          "weight": "bolder",
+          "isSubtle": false
+         },
+         {
            "type": "Input.ChoiceSet",
            "id": selectorValue,
            "style": "compact",
            "value": "0",
+           "separator": true,
            "choices": choiceList
          }
        ],

@@ -70,16 +70,13 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
       const client = new SimpleGraphClient(tokenResponse.token);
       const me = await client.getMe();
 
-      console.log(`You are: ${ me.displayName }`);
-      console.log(`You're department is: ${ me.jobTitle }`);
-
-      await axios.get(process.env.SearchService +'/indexes/'+ process.env.SearchServiceIndex + '/docs?',
+      await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
             { params: {
               'api-version': '2019-05-06',
               'search': '*'
               },
             headers: {
-              'api-key': process.env.SearchServiceKey,
+              'api-key': process.env.GlossarySearchServiceKey,
               'ContentType': 'application/json'
         }
 
@@ -87,19 +84,28 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
           if (response){
 
+
             var itemCount = response.data.value.length
             var itemArray = self.state.reportNameSearch.slice();
 
             for (var i = 0; i < itemCount; i++)
             {
-                  const itemResult = response.data.value[i].metadata_reportname
 
-                  if (itemArray.indexOf(itemResult) === -1)
-                  {
-                    itemArray.push({'title': itemResult, 'value': itemResult})
-                  }
+              const definedBy = response.data.value[i].metadata_definedby.toLowerCase()
+              const definedByToken = me.jobTitle.toLowerCase()
+
+              if (definedBy === definedByToken) {
+
+                const itemResult = response.data.value[i].questions[0]
+
+                if (itemArray.indexOf(itemResult) === -1)
+                {
+                  itemArray.push({'title': itemResult, 'value': itemResult})
+                }
+
+              }
+
             }
-
             //console.log(itemArray)
             self.state.reportNameSearch = itemArray
 
@@ -109,7 +115,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
                console.log(error);
         });
 
-      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard(this.state.reportNameSearch, 'glossary_term_selector_value')] });
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard('Please Select a Business Glossary Term', this.state.reportNameSearch, 'glossary_term_selector_value')] });
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
