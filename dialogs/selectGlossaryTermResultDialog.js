@@ -57,7 +57,7 @@ class SelectGlossaryTermResultDialog {
 
           if (response){
 
-          self.state.glossaryTerm= response.data.value[0].questions
+          self.state.glossaryTerm= response.data.value[0].questions[0]
           self.state.glossaryDescription = response.data.value[0].answer
           self.state.glossaryDefinedBy = response.data.value[0].metadata_definedby.toUpperCase()
           self.state.glossaryOutput = response.data.value[0].metadata_output.toUpperCase()
