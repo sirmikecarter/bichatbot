@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "@microsoft/microsoft-graph-client": "1.4.0",
+        "array-sort": "^1.0.0",
         "botbuilder": "~4.5.1",
         "botbuilder-ai": "^4.5.3",
         "botbuilder-dialogs": "~4.5.1",

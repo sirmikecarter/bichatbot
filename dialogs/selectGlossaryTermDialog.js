@@ -3,6 +3,7 @@ const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuild
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { DialogHelper } = require('./dialogHelper');
 const { SimpleGraphClient } = require('../simple-graph-client');
+var arraySort = require('array-sort');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
@@ -18,19 +19,15 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
         this.dialogHelper = new DialogHelper();
 
         this.state = {
-          reportArray: [],
-          reportArrayAnalytics: [],
-          reportArrayFormData: [],
-          reportArrayLanguage: [],
-          reportArrayEntities: [],
-          reportArrayKeyPhrases: [],
-          reportArraySentiment: [],
-          itemArrayMetaUnique: []
+          reportNameSearch: [],
+          termArray: [],
         };
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
+                this.filterStep.bind(this),
                 this.destinationStep.bind(this)
             ]));
 
@@ -59,13 +56,27 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
         }
     }
 
+    async filterStep(stepContext) {
+
+      return await stepContext.prompt(CHOICE_PROMPT, {
+          prompt: 'Single-View or Multi-View?',
+          choices: ChoiceFactory.toChoices(['Single-View Glossary', 'Multi-View Glossary'])
+      });
+
+    }
+
     /**
      * If a destination city has not been provided, prompt for one.
      */
-    async destinationStep(stepContext, tokenResponse) {
+    async destinationStep(stepContext, tokenResponse, view) {
 
       var self = this;
       self.state.reportNameSearch = []
+      self.state.termArray = []
+
+      switch (view) {
+
+      case 'Single-View Glossary':
 
       const client = new SimpleGraphClient(tokenResponse.token);
       const me = await client.getMe();
@@ -115,7 +126,74 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
                console.log(error);
         });
 
-      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard('Please Select a Business Glossary Term', this.state.reportNameSearch, 'glossary_term_selector_value')] });
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard('Please Select a Glossary Term', this.state.reportNameSearch, 'glossary_term_selector_value')] });
+
+      break;
+
+      case 'Multi-View Glossary':
+
+        const clientNew = new SimpleGraphClient(tokenResponse.token);
+        const meNew = await clientNew.getMe();
+
+        const definedByTokenNew = meNew.jobTitle.toLowerCase()
+
+        var self = this;
+
+
+
+        await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
+                { params: {
+                  'api-version': '2019-05-06',
+                  'search': '*',
+                  '$filter': 'metadata_definedby eq ' + '\'' + definedByTokenNew + '\''
+                  },
+                headers: {
+                  'api-key': process.env.GlossarySearchServiceKey,
+                  'ContentType': 'application/json'
+          }
+
+        }).then(response => {
+
+          if (response){
+
+            var itemCount = response.data.value.length
+
+            var itemArray = self.state.termArray.slice();
+
+            for (var i = 0; i < itemCount; i++)
+            {
+                  const glossaryTerm = response.data.value[i].questions[0]
+                  const glossaryDescription = response.data.value[i].answer
+                  const glossaryDefinedBy = response.data.value[i].metadata_definedby.toUpperCase()
+                  const glossaryOutput = response.data.value[i].metadata_output.toUpperCase()
+
+                  if (itemArray.indexOf(glossaryTerm) === -1)
+                  {
+                    itemArray.push({'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput})
+                  }
+            }
+
+            self.state.termArray = arraySort(itemArray, 'glossaryterm')
+
+
+         }
+
+        }).catch((error)=>{
+               console.log(error);
+        });
+
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I Found ' + this.state.termArray.length + ' Glossary Terms ','Here are the Results')] });
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
+            this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
+            this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
+            this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output)],
+        attachmentLayout: AttachmentLayoutTypes.Carousel });
+
+        break;
+
+        //await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.glossaryTerm, this.state.glossaryDescription, this.state.glossaryDefinedBy, this.state.glossaryOutput)] });
+
+      }
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 

@@ -5,17 +5,18 @@ const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, Wate
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { LogoutDialog } = require('./logoutDialog');
 const { OAuthHelpers } = require('../oAuthHelpers');
-
-const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
-const OAUTH_PROMPT = 'oAuthPrompt';
-const CHOICE_PROMPT = 'choicePrompt';
-const TEXT_PROMPT = 'textPrompt';
-
 const { DialogHelper } = require('./dialogHelper');
 const { SelectReportDialog } = require('./selectReportDialog');
 const { SelectReportResultDialog } = require('./selectReportResultDialog');
 const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
 const { SelectGlossaryTermResultDialog } = require('./selectGlossaryTermResultDialog');
+
+const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
+const OAUTH_PROMPT = 'oAuthPrompt';
+const CHOICE_PROMPT = 'choicePrompt';
+const TEXT_PROMPT = 'textPrompt';
+const SELECT_GLOSSARY_TERM_DIALOG = 'selectGlossaryTermDialog';
+
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
 
 class MainDialog extends LogoutDialog {
@@ -24,6 +25,7 @@ class MainDialog extends LogoutDialog {
 
 
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
+            .addDialog(new SelectGlossaryTermDialog(SELECT_GLOSSARY_TERM_DIALOG))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
                 connectionName: process.env.ConnectionName,
                 text: 'Please log in with your credentials and enter the validation code into this chat window to complete the log in process',
@@ -90,32 +92,35 @@ class MainDialog extends LogoutDialog {
               return await step.endDialog();
           }else{
 
-            await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
+            switch (step.context.activity.text) {
+            case 'Single-View Glossary':
+                return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
+                break;
+            case 'Multi-View Glossary':
+                return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
+                break;
+            default:
+                //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
 
-            return await step.prompt(CHOICE_PROMPT, {
-                prompt: '',
-                choices: ChoiceFactory.toChoices(['Who Am I?', 'Business Glossary', 'View Archer Reports'])
-            });
-            //return await step.prompt(TEXT_PROMPT, { prompt: 'Would you like to do? (type \'me\', \'send <EMAIL>\' or \'recent\')' });
+                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
+
+                return await step.prompt(CHOICE_PROMPT, {
+                    prompt: '',
+                    choices: ChoiceFactory.toChoices(['Who Am I?', 'Glossary', 'Archer Reports'])
+                });
+
+            }
+
           }
+
+
+
+        }else{
+
           await step.context.sendActivity('Login was not successful please try again.');
           return await step.endDialog();
 
-
-          }
-
-          // if(step.context.activity.text)
-          // {
-          //   console.log(step.context.activity.text)
-          // }
-
-          // const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
-          // return await step.context.sendActivity({ attachments: [welcomeCard] });
-          //
-          // return await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
-
-          //await step.context.sendActivity('You are now logged in.');
-
+        }
 
     }
 
@@ -153,16 +158,19 @@ class MainDialog extends LogoutDialog {
                 case 'Who Am I?':
                     await OAuthHelpers.listMe(step.context, tokenResponse);
                     break;
-                case 'send':
-                    await OAuthHelpers.sendMail(step.context, tokenResponse, parts[1]);
+                case 'Glossary':
+                    //await this.selectGlossaryTermDialog.filterStep(step);
+                    //await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG);
+
+                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Single-View Glossary or Multi-View Glossary?','')] });
+
+                    await step.prompt(CHOICE_PROMPT, {
+                        prompt: '',
+                        choices: ChoiceFactory.toChoices(['Single-View Glossary', 'Multi-View Glossary'])
+                    });
+
                     break;
-                case 'recent':
-                    await OAuthHelpers.listRecentMail(step.context, tokenResponse);
-                    break;
-                case 'Business Glossary':
-                    await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse);
-                    break;
-                case 'View Archer Reports':
+                case 'Archer Reports':
                     await this.selectReportDialog.destinationStep(step);
                     break;
                 default:
