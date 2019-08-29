@@ -118,7 +118,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
             }
             //console.log(itemArray)
-            self.state.reportNameSearch = itemArray
+            self.state.reportNameSearch = arraySort(itemArray, 'title')
 
          }
 
@@ -248,6 +248,31 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
                 this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
                 this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output),
                 this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[7].glossaryterm, this.state.termArray[7].description, this.state.termArray[7].definedby, this.state.termArray[7].output)],
+            attachmentLayout: AttachmentLayoutTypes.Carousel });
+            break;
+        case 9:
+            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[7].glossaryterm, this.state.termArray[7].description, this.state.termArray[7].definedby, this.state.termArray[7].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[8].glossaryterm, this.state.termArray[8].description, this.state.termArray[8].definedby, this.state.termArray[8].output)],
+            attachmentLayout: AttachmentLayoutTypes.Carousel });
+            break;
+        case 10:
+            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[7].glossaryterm, this.state.termArray[7].description, this.state.termArray[7].definedby, this.state.termArray[7].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[8].glossaryterm, this.state.termArray[8].description, this.state.termArray[8].definedby, this.state.termArray[8].output),
+              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[9].glossaryterm, this.state.termArray[9].description, this.state.termArray[9].definedby, this.state.termArray[9].output)],
             attachmentLayout: AttachmentLayoutTypes.Carousel });
             break;
         default:
