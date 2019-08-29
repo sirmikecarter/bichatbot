@@ -139,8 +139,6 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
         var self = this;
 
-
-
         await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
                 { params: {
                   'api-version': '2019-05-06',
@@ -205,6 +203,8 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
           await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...No Results Found','')] });
 
         }
+
+        break;
 
       }
 
