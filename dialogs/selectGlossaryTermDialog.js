@@ -182,108 +182,29 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
                console.log(error);
         });
 
-        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I Found ' + this.state.termArray.length + ' Glossary Terms ','Here are the Results')] });
 
+        if (this.state.termArray.length > 0){
 
-        // Display Reports
-        switch (this.state.termArray.length) {
-        case 0:
-              await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...No Results Found','')] });
-              break;
-        case 1:
-              await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output)],
-              attachmentLayout: AttachmentLayoutTypes.Carousel });
-              break;
-        case 2:
-              await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                  this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output)],
-              attachmentLayout: AttachmentLayoutTypes.Carousel });
-              break;
-        case 3:
-              await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                  this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-                  this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output)],
-              attachmentLayout: AttachmentLayoutTypes.Carousel });
-              break;
-        case 4:
-              await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                  this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-                  this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-                  this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output)],
-              attachmentLayout: AttachmentLayoutTypes.Carousel });
-              break;
-        case 5:
-            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
-        case 6:
-            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
-        case 7:
-            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
-        case 8:
-            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output),
-                this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[7].glossaryterm, this.state.termArray[7].description, this.state.termArray[7].definedby, this.state.termArray[7].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
-        case 9:
-            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[7].glossaryterm, this.state.termArray[7].description, this.state.termArray[7].definedby, this.state.termArray[7].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[8].glossaryterm, this.state.termArray[8].description, this.state.termArray[8].definedby, this.state.termArray[8].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
-        case 10:
-            await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[1].glossaryterm, this.state.termArray[1].description, this.state.termArray[1].definedby, this.state.termArray[1].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[2].glossaryterm, this.state.termArray[2].description, this.state.termArray[2].definedby, this.state.termArray[2].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[3].glossaryterm, this.state.termArray[3].description, this.state.termArray[3].definedby, this.state.termArray[3].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[4].glossaryterm, this.state.termArray[4].description, this.state.termArray[4].definedby, this.state.termArray[4].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[5].glossaryterm, this.state.termArray[5].description, this.state.termArray[5].definedby, this.state.termArray[5].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[6].glossaryterm, this.state.termArray[6].description, this.state.termArray[6].definedby, this.state.termArray[6].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[7].glossaryterm, this.state.termArray[7].description, this.state.termArray[7].definedby, this.state.termArray[7].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[8].glossaryterm, this.state.termArray[8].description, this.state.termArray[8].definedby, this.state.termArray[8].output),
-              this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[9].glossaryterm, this.state.termArray[9].description, this.state.termArray[9].definedby, this.state.termArray[9].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
-        default:
-          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.termArray[0].glossaryterm, this.state.termArray[0].description, this.state.termArray[0].definedby, this.state.termArray[0].output)],
-            attachmentLayout: AttachmentLayoutTypes.Carousel });
-            break;
+          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I Found ' + this.state.termArray.length + ' Glossary Terms ','Here are the Results')] });
+
+          var attachments = [];
+
+          this.state.termArray.forEach(function(data){
+
+          var card = this.dialogHelper.createGlossaryCard(meNew.jobTitle, data.glossaryterm, data.description, data.definedby, data.output)
+
+          attachments.push(card);
+
+          }, this)
+
+          await stepContext.context.sendActivity({ attachments: attachments,
+          attachmentLayout: AttachmentLayoutTypes.Carousel });
+
+        }else{
+
+          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...No Results Found','')] });
+
         }
-
-        break;
-
-        //await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(meNew.jobTitle, this.state.glossaryTerm, this.state.glossaryDescription, this.state.glossaryDefinedBy, this.state.glossaryOutput)] });
 
       }
 
