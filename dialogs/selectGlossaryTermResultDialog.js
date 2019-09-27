@@ -40,7 +40,7 @@ class SelectGlossaryTermResultDialog {
      *
      * @param {TurnContext} turn context object
      */
-    async onTurn(turnContext, tokenResponse) {
+    async onTurn(stepContext, turnContext, tokenResponse) {
         // Call QnA Maker and get results.
         //console.log(turnContext.activity.value.report_name_selector_value)
 
@@ -122,40 +122,16 @@ class SelectGlossaryTermResultDialog {
 
         }
 
-
-
-        // await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
-        //         { params: {
-        //           'api-version': '2019-05-06',
-        //           'search': glossaryTermQuery,
-        //           '$filter': 'metadata_definedby eq ' + '\'' + definedByToken + '\''
-        //           },
-        //         headers: {
-        //           'api-key': process.env.GlossarySearchServiceKey,
-        //           'ContentType': 'application/json'
-        //   }
-        //
-        // }).then(response => {
-        //
-        //   if (response){
-        //
-        //   self.state.glossaryTerm= response.data.value[0].questions[0]
-        //   self.state.glossaryDescription = response.data.value[0].answer
-        //   self.state.glossaryDefinedBy = response.data.value[0].metadata_definedby.toUpperCase()
-        //   self.state.glossaryOutput = response.data.value[0].metadata_output.toUpperCase()
-        //
-        //  }
-        //
-        // }).catch((error)=>{
-        //        console.log(error);
-        // });
-        //
-        // await turnContext.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(this.state.glossaryTerm, this.state.glossaryDescription, this.state.glossaryDefinedBy, this.state.glossaryOutput)] });
-
         await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
-        var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
-        return await turnContext.sendActivity(reply);
+      return await stepContext.prompt(CHOICE_PROMPT, {
+            prompt: '',
+            choices: ChoiceFactory.toChoices(['Main Menu', 'Logout'])
+        });
+
+
+        // var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
+        // return await turnContext.sendActivity(reply);
 
         //return await turnContext.endDialog('End Dialog');
 

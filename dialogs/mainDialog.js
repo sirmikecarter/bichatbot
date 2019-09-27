@@ -94,12 +94,12 @@ class MainDialog extends LogoutDialog {
 
             if (step.context.activity.value.action === 'report_name_selector_value'){
 
-              await this.selectReportResultDialog.onTurn(step.context);
+              return await this.selectReportResultDialog.onTurn(step.context);
             }
 
             if (step.context.activity.value.action === 'glossary_term_selector_value'){
 
-              await this.selectGlossaryTermResultDialog.onTurn(step.context, tokenResponse);
+              return await this.selectGlossaryTermResultDialog.onTurn(step, step.context, tokenResponse);
             }
 
               //console.log(step.context.activity.value.action)
