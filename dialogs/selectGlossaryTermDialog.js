@@ -1,37 +1,32 @@
-const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
+const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet, OAuthPrompt } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
+const { LuisApplication, LuisPredictionOptions, LuisRecognizer } = require('botbuilder-ai');
 const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { DialogHelper } = require('./dialogHelper');
 const { SimpleGraphClient } = require('../simple-graph-client');
+const { OAuthHelpers } = require('../oAuthHelpers');
 var arraySort = require('array-sort');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const TEXT_PROMPT = 'textPrompt';
 const WATERFALL_DIALOG = 'waterfallDialog';
+const OAUTH_PROMPT = 'OAuthPrompt';
 
 const axios = require('axios');
 
 class SelectGlossaryTermDialog extends CancelAndHelpDialog {
     constructor(id) {
-        super(id || 'selectReportDialog');
+        super(id || 'selectGlossaryTermDialog');
 
         this.dialogHelper = new DialogHelper();
 
         this.state = {
           reportNameSearch: [],
           termArray: [],
+          userDivision: ''
         };
 
-        this.addDialog(new TextPrompt(TEXT_PROMPT))
-            .addDialog(new ChoicePrompt(CHOICE_PROMPT))
-            .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
-            .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
-                this.filterStep.bind(this),
-                this.destinationStep.bind(this)
-            ]));
-
-        this.initialDialogId = WATERFALL_DIALOG;
     }
 
     /**
@@ -51,18 +46,9 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
         if (turnContext.activity.value){
 
-          console.log(turnContext.activity.value)
+          //console.log(turnContext.activity.value)
 
         }
-    }
-
-    async filterStep(stepContext) {
-
-      return await stepContext.prompt(CHOICE_PROMPT, {
-          prompt: 'Single-View or Multi-View?',
-          choices: ChoiceFactory.toChoices(['Single-View Glossary', 'Multi-View Glossary'])
-      });
-
     }
 
     /**
@@ -98,6 +84,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
             var itemCount = response.data.value.length
             var itemArray = self.state.reportNameSearch.slice();
+            var itemArrayOrg = self.state.reportNameSearch.slice();
 
             for (var i = 0; i < itemCount; i++)
             {
@@ -105,19 +92,20 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
               const definedBy = response.data.value[i].metadata_definedby.toLowerCase()
               const definedByToken = me.jobTitle.toLowerCase()
 
-              if (definedBy === definedByToken) {
+              //if (definedBy === definedByToken) {
 
                 const itemResult = response.data.value[i].questions[0]
 
-                if (itemArray.indexOf(itemResult) === -1)
+                if (itemArrayOrg.indexOf(itemResult) === -1)
                 {
+                  itemArrayOrg.push(itemResult)
                   itemArray.push({'title': itemResult, 'value': itemResult})
                 }
 
-              }
+              //}
 
             }
-            //console.log(itemArray)
+            //console.log(itemArrayOrg)
             self.state.reportNameSearch = arraySort(itemArray, 'title')
 
          }
@@ -138,6 +126,10 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
         const definedByTokenNew = meNew.jobTitle.toLowerCase()
 
         var self = this;
+        self.state.reportNameSearch = []
+        self.state.termArray = []
+
+        // Equal to User's Division
 
         await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
                 { params: {
@@ -164,10 +156,11 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
                   const glossaryDescription = response.data.value[i].answer
                   const glossaryDefinedBy = response.data.value[i].metadata_definedby.toUpperCase()
                   const glossaryOutput = response.data.value[i].metadata_output.toUpperCase()
+                  const glossaryRelated = response.data.value[i].metadata_related
 
                   if (itemArray.indexOf(glossaryTerm) === -1)
                   {
-                    itemArray.push({'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput})
+                    itemArray.push({'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput, 'related': glossaryRelated})
                   }
             }
 
@@ -183,13 +176,13 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
         if (this.state.termArray.length > 0){
 
-          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I Found ' + this.state.termArray.length + ' Glossary Terms ','Here are the Results')] });
+          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I Found ' + this.state.termArray.length + ' Glossary Terms Related to Your Area ','Here are the Results')] });
 
           var attachments = [];
 
           this.state.termArray.forEach(function(data){
 
-          var card = this.dialogHelper.createGlossaryCard(meNew.jobTitle, data.glossaryterm, data.description, data.definedby, data.output)
+          var card = this.dialogHelper.createGlossaryCard(meNew.jobTitle, data.glossaryterm, data.description, data.definedby, data.output, data.related)
 
           attachments.push(card);
 
@@ -201,6 +194,76 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
         }else{
 
           await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...No Results Found','')] });
+
+        }
+
+        // Not Equal to User's Division
+
+        self.state.termArray = []
+
+        await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
+                { params: {
+                  'api-version': '2019-05-06',
+                  'search': '*',
+                  '$filter': 'metadata_definedby ne ' + '\'' + definedByTokenNew + '\''
+                  },
+                headers: {
+                  'api-key': process.env.GlossarySearchServiceKey,
+                  'ContentType': 'application/json'
+          }
+
+        }).then(response => {
+
+          if (response){
+
+            var itemCount = response.data.value.length
+
+            var itemArray = self.state.termArray.slice();
+
+            for (var i = 0; i < itemCount; i++)
+            {
+                  const glossaryTerm = response.data.value[i].questions[0]
+                  const glossaryDescription = response.data.value[i].answer
+                  const glossaryDefinedBy = response.data.value[i].metadata_definedby.toUpperCase()
+                  const glossaryOutput = response.data.value[i].metadata_output.toUpperCase()
+                  const glossaryRelated = response.data.value[i].metadata_related
+
+                  if (itemArray.indexOf(glossaryTerm) === -1)
+                  {
+                    itemArray.push({'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput, 'related': glossaryRelated})
+                  }
+            }
+
+            self.state.termArray = arraySort(itemArray, 'glossaryterm')
+
+
+         }
+
+        }).catch((error)=>{
+               console.log(error);
+        });
+
+
+        if (this.state.termArray.length > 0){
+
+          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I Found ' + this.state.termArray.length + ' Glossary Terms NOT Related to Your Area ','Here are the Results')] });
+
+          var attachments = [];
+
+          this.state.termArray.forEach(function(data){
+
+          var card = this.dialogHelper.createGlossaryCard(data.definedby, data.glossaryterm, data.description, data.definedby, data.output, data.related)
+
+          attachments.push(card);
+
+          }, this)
+
+          await stepContext.context.sendActivity({ attachments: attachments,
+          attachmentLayout: AttachmentLayoutTypes.Carousel });
+
+        }else{
+
+          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...No Other Terms Outside of Your Area Were Found','')] });
 
         }
 

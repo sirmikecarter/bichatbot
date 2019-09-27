@@ -198,7 +198,7 @@ class DialogHelper {
        });
      }
 
-     createGlossaryCard(division, term, description, definedBy, output) {
+     createGlossaryCard(division, term, description, definedBy, output, related) {
 
      return CardFactory.adaptiveCard({
          "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -250,10 +250,267 @@ class DialogHelper {
                          "title": "Output:",
                          "value": output,
                          "wrap": true
+                       },
+                       {
+                         "title": "Related Terms:",
+                         "value": related,
+                         "wrap": true
                        }
                      ]
                    },
                  ]
+               }
+             },
+             {
+               "type": "Action.ShowCard",
+               "title": "View Mind Map",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                          {
+                              "type": "TextBlock",
+                              "text": "Mind Map",
+                              "weight": "Bolder",
+                              "horizontalAlignment": "Center",
+                              "size": "Large"
+                          },
+                          {
+                              "type": "ColumnSet",
+                              "columns": [
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": "Related",
+                                              "wrap": true,
+                                              "horizontalAlignment": "Center",
+                                              "weight": "Bolder"
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": "Term",
+                                              "horizontalAlignment": "Center",
+                                              "weight": "Bolder"
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center",
+                                      "horizontalAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": "Output",
+                                              "horizontalAlignment": "Center",
+                                              "weight": "Bolder"
+                                          }
+                                      ],
+                                      "horizontalAlignment": "Center",
+                                      "verticalContentAlignment": "Center"
+                                  }
+                              ]
+                          },
+                          {
+                              "type": "ColumnSet",
+                              "columns": [
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": related,
+                                              "horizontalAlignment": "Center",
+                                              "wrap": true
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "Image",
+                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
+                                              "width": "1000px",
+                                              "height": "2px"
+                                          }
+                                      ],
+                                      "horizontalAlignment": "Center",
+                                      "spacing": "None",
+                                      "verticalContentAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": term,
+                                              "horizontalAlignment": "Center",
+                                              "wrap": true
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "Image",
+                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
+                                              "width": "1000px",
+                                              "height": "2px"
+                                          }
+                                      ],
+                                      "spacing": "None",
+                                      "horizontalAlignment": "Center",
+                                      "verticalContentAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                          "type": "TextBlock",
+                                          "text": output,
+                                          "horizontalAlignment": "Center",
+                                          "wrap": true
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center"
+                                  }
+                              ],
+                              "separator": true
+                          },
+                          {
+                              "type": "ColumnSet",
+                              "columns": [
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "Image",
+                                              "altText": "",
+                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
+                                              "width": "2px",
+                                              "horizontalAlignment": "Center",
+                                              "height": "25px"
+                                          }
+                                      ]
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  }
+                              ],
+                              "separator": true
+                          },
+                          {
+                              "type": "ColumnSet",
+                              "columns": [
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": "Defined By",
+                                              "horizontalAlignment": "Center",
+                                              "weight": "Bolder",
+                                              "wrap": true
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  }
+                              ]
+                          },
+                          {
+                              "type": "ColumnSet",
+                              "columns": [
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch",
+                                      "items": [
+                                          {
+                                              "type": "TextBlock",
+                                              "text": definedBy,
+                                              "horizontalAlignment": "Center",
+                                              "wrap": true
+                                          }
+                                      ],
+                                      "verticalContentAlignment": "Center",
+                                      "horizontalAlignment": "Center"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  },
+                                  {
+                                      "type": "Column",
+                                      "width": "stretch"
+                                  }
+                              ]
+                          }
+                      ]
                }
              }
            ]

@@ -10,12 +10,14 @@ const { SelectReportDialog } = require('./selectReportDialog');
 const { SelectReportResultDialog } = require('./selectReportResultDialog');
 const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
 const { SelectGlossaryTermResultDialog } = require('./selectGlossaryTermResultDialog');
+const { SearchGlossaryTermDialog } = require('./searchGlossaryTermDialog');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const OAUTH_PROMPT = 'oAuthPrompt';
 const CHOICE_PROMPT = 'choicePrompt';
 const TEXT_PROMPT = 'textPrompt';
 const SELECT_GLOSSARY_TERM_DIALOG = 'selectGlossaryTermDialog';
+const SEARCH_GLOSSARY_TERM_DIALOG = 'searchGlossaryTermDialog';
 
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
 
@@ -23,9 +25,14 @@ class MainDialog extends LogoutDialog {
     constructor() {
         super('MainDialog');
 
+        this.dialogHelper = new DialogHelper();
+        this.selectReportDialog = new SelectReportDialog();
+        this.selectReportResultDialog = new SelectReportResultDialog();
+        this.selectGlossaryTermDialog = new SelectGlossaryTermDialog();
+        this.selectGlossaryTermResultDialog = new SelectGlossaryTermResultDialog();
+
 
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
-            .addDialog(new SelectGlossaryTermDialog(SELECT_GLOSSARY_TERM_DIALOG))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
                 connectionName: process.env.ConnectionName,
                 text: 'Please log in with your credentials and enter the validation code into this chat window to complete the log in process',
@@ -33,6 +40,7 @@ class MainDialog extends LogoutDialog {
                 timeout: 300000
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new SearchGlossaryTermDialog(SEARCH_GLOSSARY_TERM_DIALOG))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.promptStep.bind(this),
                 this.loginStep.bind(this),
@@ -41,11 +49,7 @@ class MainDialog extends LogoutDialog {
             ]));
 
         this.initialDialogId = MAIN_WATERFALL_DIALOG;
-        this.dialogHelper = new DialogHelper();
-        this.selectReportDialog = new SelectReportDialog();
-        this.selectReportResultDialog = new SelectReportResultDialog();
-        this.selectGlossaryTermDialog = new SelectGlossaryTermDialog();
-        this.selectGlossaryTermResultDialog = new SelectGlossaryTermResultDialog();
+
     }
 
     /**
@@ -66,7 +70,17 @@ class MainDialog extends LogoutDialog {
     }
 
     async promptStep(step) {
-        return step.beginDialog(OAUTH_PROMPT);
+
+      switch (step.context.activity.text) {
+        case 'Log In As Guest':
+            console.log(step.context.activity.text)
+            await step.endDialog();
+            return await this.selectReportDialog.destinationStep(step);
+            break;
+        default:
+            return await step.beginDialog(OAUTH_PROMPT);
+      }
+
     }
 
     async loginStep(step) {
@@ -98,6 +112,10 @@ class MainDialog extends LogoutDialog {
                 break;
             case 'Multi-View Glossary':
                 return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
+                break;
+            case 'Search the Glossary':
+                //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
+                return await step.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
                 break;
             default:
                 //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
@@ -162,11 +180,11 @@ class MainDialog extends LogoutDialog {
                     //await this.selectGlossaryTermDialog.filterStep(step);
                     //await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG);
 
-                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Single-View Glossary or Multi-View Glossary?','')] });
+                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Single-View Glossary, Multi-View Glossary or Search the Glossary?','')] });
 
                     await step.prompt(CHOICE_PROMPT, {
                         prompt: '',
-                        choices: ChoiceFactory.toChoices(['Single-View Glossary', 'Multi-View Glossary'])
+                        choices: ChoiceFactory.toChoices(['Single-View Glossary', 'Multi-View Glossary', 'Search the Glossary'])
                     });
 
                     break;
@@ -174,7 +192,7 @@ class MainDialog extends LogoutDialog {
                     await this.selectReportDialog.destinationStep(step);
                     break;
                 default:
-                    await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
+                    //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
                 }
             }
         } else {
