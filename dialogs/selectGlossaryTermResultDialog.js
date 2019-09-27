@@ -132,6 +132,7 @@ class SelectGlossaryTermResultDialog {
 
         var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
         return await turnContext.sendActivity(reply);
+        return await turnContext.sendActivity(reply);
 
         //return await turnContext.endDialog('End Dialog');
 
