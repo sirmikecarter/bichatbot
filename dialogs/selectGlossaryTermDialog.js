@@ -30,28 +30,6 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
     }
 
     /**
-     * The run method handles the incoming activity (in the form of a TurnContext) and passes it through the dialog system.
-     * If no dialog is active, it will start the default dialog.
-     * @param {*} turnContext
-     * @param {*} accessor
-     */
-    async onTurn(turnContext, accessor) {
-        // Call QnA Maker and get results.
-        const dialogSet = new DialogSet(accessor);
-        dialogSet.add(this);
-
-        const dialogContext = await dialogSet.createContext(turnContext);
-        const results = await dialogContext.continueDialog();
-        await dialogContext.beginDialog(this.id);
-
-        if (turnContext.activity.value){
-
-          //console.log(turnContext.activity.value)
-
-        }
-    }
-
-    /**
      * If a destination city has not been provided, prompt for one.
      */
     async destinationStep(stepContext, tokenResponse, view) {
