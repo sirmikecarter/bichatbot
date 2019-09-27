@@ -124,14 +124,14 @@ class SelectGlossaryTermResultDialog {
 
         await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
-      return await stepContext.prompt(CHOICE_PROMPT, {
-            prompt: '',
-            choices: ChoiceFactory.toChoices(['Main Menu', 'Logout'])
-        });
+      // return await stepContext.prompt(CHOICE_PROMPT, {
+      //       prompt: '',
+      //       choices: ChoiceFactory.toChoices(['Main Menu', 'Logout'])
+      //   });
 
 
-        // var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
-        // return await turnContext.sendActivity(reply);
+        var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
+        return await turnContext.sendActivity(reply);
 
         //return await turnContext.endDialog('End Dialog');
 
