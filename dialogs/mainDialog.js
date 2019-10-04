@@ -11,6 +11,7 @@ const { SelectReportResultDialog } = require('./selectReportResultDialog');
 const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
 const { SelectGlossaryTermResultDialog } = require('./selectGlossaryTermResultDialog');
 const { SearchGlossaryTermDialog } = require('./searchGlossaryTermDialog');
+const { GuestLogInDialog } = require('./guestLogInDialog');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const OAUTH_PROMPT = 'oAuthPrompt';
@@ -18,6 +19,7 @@ const CHOICE_PROMPT = 'choicePrompt';
 const TEXT_PROMPT = 'textPrompt';
 const SELECT_GLOSSARY_TERM_DIALOG = 'selectGlossaryTermDialog';
 const SEARCH_GLOSSARY_TERM_DIALOG = 'searchGlossaryTermDialog';
+const GUEST_LOG_IN_DIALOG = 'guestLogInDialog';
 
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
 
@@ -31,6 +33,10 @@ class MainDialog extends LogoutDialog {
         this.selectGlossaryTermDialog = new SelectGlossaryTermDialog();
         this.selectGlossaryTermResultDialog = new SelectGlossaryTermResultDialog();
 
+        this.state = {
+          statusUpdate: false,
+        };
+
 
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
@@ -41,6 +47,7 @@ class MainDialog extends LogoutDialog {
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new SearchGlossaryTermDialog(SEARCH_GLOSSARY_TERM_DIALOG))
+            .addDialog(new GuestLogInDialog(GUEST_LOG_IN_DIALOG))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.promptStep.bind(this),
                 this.loginStep.bind(this),
@@ -74,8 +81,7 @@ class MainDialog extends LogoutDialog {
       switch (step.context.activity.text) {
         case 'Log In As Guest':
             console.log(step.context.activity.text)
-            await step.endDialog();
-            return await this.selectReportDialog.destinationStep(step);
+            return await step.beginDialog(GUEST_LOG_IN_DIALOG);
             break;
         default:
             return await step.beginDialog(OAUTH_PROMPT);
@@ -117,15 +123,58 @@ class MainDialog extends LogoutDialog {
                 //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
                 return await step.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
                 break;
+            case 'ACTO':
+                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+                return await step.endDialog();
+                break;
+            case 'FINO':
+                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+                return await step.endDialog();
+                break;
+            case 'Member':
+
+                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+                // return await step.prompt(CHOICE_PROMPT, {
+                //     prompt: '',
+                //     choices: ChoiceFactory.toChoices(['Log In', 'Log In As Guest'])
+                // });
+
+                return await step.endDialog();
+
+                break;
+            case 'Employer':
+                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+                return await step.endDialog();
+                break;
+
             default:
                 //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
+
+                console.log(step.context.activity.text)
+
+                // console.log(this.state.statusUpdate)
+                //
+                if(this.state.statusUpdate === false){
+
+                  await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Dont Forget about the Chilli Cook-off and Halloween Costume Contest','Its on Thursday, October 31st from 11am to 1pm, in the LPN 1st Floor Atrium')] });
+                  await step.context.sendActivity({ attachments: [this.dialogHelper.createImageCard()] });
+                  await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest !!!','')] });
+                  this.state.statusUpdate = true
+
+                }
+
 
                 await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
 
                 return await step.prompt(CHOICE_PROMPT, {
                     prompt: '',
-                    choices: ChoiceFactory.toChoices(['Who Am I?', 'Glossary', 'Archer Reports'])
+                    choices: ChoiceFactory.toChoices(['Who Am I?', 'Glossary', 'Cognos Reports'])
                 });
+
+                // return await step.prompt(CHOICE_PROMPT, {
+                //     prompt: '',
+                //     choices: ChoiceFactory.toChoices(['Log In'])
+                // });
 
             }
 
@@ -144,7 +193,6 @@ class MainDialog extends LogoutDialog {
 
     async commandStep(step) {
         step.values['command'] = step.result;
-
         // Call the prompt again because we need the token. The reasons for this are:
         // 1. If the user is already logged in we do not need to store the token locally in the bot and worry
         // about refreshing it. We can always just call the prompt again to get the token.
@@ -173,6 +221,7 @@ class MainDialog extends LogoutDialog {
                 //const command = parts[0];
 
                 switch (step.values.command.value) {
+
                 case 'Who Am I?':
                     await OAuthHelpers.listMe(step.context, tokenResponse);
                     break;
@@ -188,7 +237,7 @@ class MainDialog extends LogoutDialog {
                     });
 
                     break;
-                case 'Archer Reports':
+                case 'Cognos Reports':
                     await this.selectReportDialog.destinationStep(step);
                     break;
                 default:

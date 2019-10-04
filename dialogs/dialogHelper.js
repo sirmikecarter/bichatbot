@@ -27,6 +27,27 @@ class DialogHelper {
        });
      }
 
+     createLink(text, link) {
+       return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+             "type": "TextBlock",
+             "text": text
+           }
+         ],
+         "actions": [
+           {
+             "type": "Action.OpenUrl",
+             "title": "Click Me",
+             "url": link
+           }
+         ]
+       });
+     }
+
      createGifCard() {
 
        return CardFactory.animationCard(
@@ -39,6 +60,31 @@ class DialogHelper {
                subtitle: 'Retirement Formula'
            }
        );
+     }
+
+     createImageCard() {
+
+       return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+             {
+                 "type": "ColumnSet",
+                 "columns": [
+                     {
+                         "type": "Column",
+                         "items": [
+                             {
+                                 "type": "Image",
+                                 "url": "https://cdn.dribbble.com/users/334335/screenshots/3026014/halloween-eblast-header-3.png"
+                             }
+                         ]
+                     }
+                 ]
+             }
+         ]
+       });
      }
 
      createDocumentCard(title, language, keyPhrases, organizations, persons, locations, glossary1, glossary2) {
