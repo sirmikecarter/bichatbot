@@ -107,6 +107,10 @@ class LogoutDialog extends ComponentDialog {
                 //console.log(dispatchResults.intents)
                 console.log(dispatchTopIntent)
                 break;
+              case 'Reports':
+                  //console.log(dispatchResults.intents)
+                console.log(dispatchTopIntent)
+                break;
               case 'Weather':
                 //console.log(dispatchResults.intents)
                 console.log(dispatchTopIntent)
