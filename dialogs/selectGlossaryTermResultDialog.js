@@ -122,10 +122,10 @@ class SelectGlossaryTermResultDialog {
 
         }
 
-        var myTimer = setInterval(function(){ console.log('waiting'); }, 2000);
-
+        // var myTimer = setInterval(function(){ console.log('waiting'); }, 2000);
+        // clearInterval(myTimer)
         await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
-clearInterval(myTimer)
+
         var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
         return await turnContext.sendActivity(reply);
 
