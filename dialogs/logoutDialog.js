@@ -159,8 +159,8 @@ class LogoutDialog extends ComponentDialog {
                           'units': 'imperial'
                           },
                         headers: {
-                          'X-RapidAPI-Host': 'community-open-weather-map.p.rapidapi.com',
-                          'X-RapidAPI-Key': '16ef84c826mshc347e29ae3e2635p1ac6bajsn51a16011742b'
+                          'X-RapidAPI-Host': process.env.XRapidAPIHost,
+                          'X-RapidAPI-Key': process.env.XRapidAPIKey
                     }
 
                     }).then(response => {
@@ -198,8 +198,8 @@ class LogoutDialog extends ComponentDialog {
                           'units': 'imperial'
                           },
                         headers: {
-                          'X-RapidAPI-Host': 'community-open-weather-map.p.rapidapi.com',
-                          'X-RapidAPI-Key': '16ef84c826mshc347e29ae3e2635p1ac6bajsn51a16011742b'
+                          'X-RapidAPI-Host': process.env.XRapidAPIHost,
+                          'X-RapidAPI-Key': process.env.XRapidAPIKey
                     }
 
                     }).then(response => {
