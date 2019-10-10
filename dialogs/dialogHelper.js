@@ -626,7 +626,7 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "url": "https://image.flaticon.com/icons/png/512/120/120855.png",
+                                              "url": "https://image.flaticon.com/icons/png/512/141/141993.png",
                                               "horizontalAlignment": "Center",
                                           }
                                       ]
