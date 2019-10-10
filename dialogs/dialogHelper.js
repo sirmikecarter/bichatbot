@@ -560,7 +560,7 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "url": "https://www.sccpre.cat/png/big/2/20392_black-line-png.png"
+                                              "url": "https://image.flaticon.com/icons/png/512/120/120833.png"
                                           }
                                       ],
                                       "horizontalAlignment": "Center",
@@ -586,7 +586,7 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "url": "https://www.sccpre.cat/png/big/2/20392_black-line-png.png"
+                                              "url": "https://image.flaticon.com/icons/png/512/120/120833.png"
                                           }
                                       ],
                                       "spacing": "None",
@@ -626,7 +626,7 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "url": "https://spng.pngfly.com/20180607/rct/kisspng-vertical-bar-character-clip-art-straight-line-5b193c68a1a8f5.4383492915283805206622.jpg",
+                                              "url": "https://image.flaticon.com/icons/png/512/120/120855.png",
                                               "horizontalAlignment": "Center",
                                           }
                                       ]
