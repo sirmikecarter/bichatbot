@@ -560,9 +560,7 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "width": "1000px",
-                                              "height": "2px",
-                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png"
+                                              "url": "https://www.sccpre.cat/png/big/2/20392_black-line-png.png"
                                           }
                                       ],
                                       "horizontalAlignment": "Center",
@@ -588,9 +586,7 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "width": "1000px",
-                                              "height": "2px",
-                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png"
+                                              "url": "https://www.sccpre.cat/png/big/2/20392_black-line-png.png"
                                           }
                                       ],
                                       "spacing": "None",
@@ -630,11 +626,8 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "altText": "",
-                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
-                                              "width": "2px",
+                                              "url": "https://spng.pngfly.com/20180607/rct/kisspng-vertical-bar-character-clip-art-straight-line-5b193c68a1a8f5.4383492915283805206622.jpg",
                                               "horizontalAlignment": "Center",
-                                              "height": "25px"
                                           }
                                       ]
                                   },
