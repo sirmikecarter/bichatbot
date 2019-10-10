@@ -65,7 +65,7 @@ class OAuthHelpers {
 
         if (me.jobTitle === 'FINO'){
           await context.sendActivity({ attachments: [this.dialogHelper.createUserCard('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTRHuG7ELWmAZNaE11lKdHTMSOGVb1xnQjh_KWz0I9VHAOk31HLpw', me.displayName, me.jobTitle)] });
-          await context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You are 16 years away from Retiring !!!','')] });
+          // await context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Youre 16 years away from Retiring !','')] });
 
         }
         //

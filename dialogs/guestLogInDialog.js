@@ -103,7 +103,7 @@ class GuestLogInDialog extends CancelAndHelpDialog {
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Dont Forget about the Chilli Cook-off and Halloween Costume Contest','Its on Thursday, October 31st from 11am to 1pm, in the LPN 1st Floor Atrium')] });
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createImageCard()] });
-      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest !!!','')] });
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest !','')] });
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...What Division Are You From?','')] });
 
@@ -152,7 +152,7 @@ class GuestLogInDialog extends CancelAndHelpDialog {
 
       var searchString = stepContext.result.value;
 
-      console.log(searchString)
+      //console.log(searchString)
 
       const definedByToken = searchString.toLowerCase()
       var self = this;
@@ -183,11 +183,6 @@ class GuestLogInDialog extends CancelAndHelpDialog {
 
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I see there are ' + self.state.itemCount + ' terms in the business glossary that are defined by your division','Please Login to see additional information')] });
-
-
-
-
-
 
       return await stepContext.endDialog('End Dialog');
 

@@ -27,6 +27,7 @@ class DialogHelper {
        });
      }
 
+
      createLink(text, link) {
        return CardFactory.adaptiveCard({
          "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -45,6 +46,168 @@ class DialogHelper {
              "url": link
            }
          ]
+       });
+     }
+
+     createSportCard(dateEvent, homeTeam, homeScore, homeBadge, awayTeam, awayScore, awayBadge) {
+       return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+           "type": "AdaptiveCard",
+           "version": "1.0",
+           "speak": "The",
+           "body": [
+             {
+               "type": "Container",
+               "items": [
+                 {
+                   "type": "ColumnSet",
+                   "columns": [
+                     {
+                       "type": "Column",
+                       "width": "auto",
+                       "items": [
+                         {
+                           "type": "Image",
+                           "url": awayBadge,
+                           "size": "medium"
+                         },
+                           {
+                           "type": "TextBlock",
+                           "text": awayTeam,
+                           "horizontalAlignment": "center",
+                           "weight": "bolder"
+                         }
+                       ]
+                     },
+                     {
+                       "type": "Column",
+                       "width": "stretch",
+                       "separator": true,
+                       "spacing": "medium",
+                       "items": [
+                         {
+                           "type": "TextBlock",
+                           "text": dateEvent,
+                           "horizontalAlignment": "center"
+                         },
+                         {
+                           "type": "TextBlock",
+                           "text": "Final",
+                           "spacing": "none",
+                           "horizontalAlignment": "center"
+                         },
+                         {
+                           "type": "TextBlock",
+                           "text": awayScore + " - " + homeScore,
+                           "size": "extraLarge",
+                           "horizontalAlignment": "center"
+                         }
+                       ]
+                     },
+                     {
+                       "type": "Column",
+                       "width": "auto",
+                       "separator": true,
+                       "spacing": "medium",
+                       "items": [
+                         {
+                           "type": "Image",
+                           "url": homeBadge,
+                           "size": "medium",
+                           "horizontalAlignment": "center"
+                         },
+                         {
+                           "type": "TextBlock",
+                           "text": homeTeam,
+                           "horizontalAlignment": "center",
+                           "weight": "bolder"
+                         }
+                       ]
+                     }
+                   ]
+                 }
+               ]
+             }
+           ]
+       });
+     }
+
+     createWeatherCard(cityName, dateTime, cityTemp, cityTempHi, cityTempLo) {
+       return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+           "type": "AdaptiveCard",
+           "version": "1.0",
+           "speak": "The forecast",
+           "body": [
+             {
+               "type": "TextBlock",
+               "text": cityName,
+               "size": "large",
+               "isSubtle": true
+             },
+             {
+               "type": "TextBlock",
+               "text": dateTime,
+               "spacing": "none"
+             },
+             {
+               "type": "ColumnSet",
+               "columns": [
+                 {
+                   "type": "Column",
+                   "width": "auto",
+                   "items": [
+                     {
+                       "type": "Image",
+                       "url": "http://messagecardplayground.azurewebsites.net/assets/Mostly%20Cloudy-Square.png",
+                       "size": "small"
+                     }
+                   ]
+                 },
+                 {
+                   "type": "Column",
+                   "width": "auto",
+                   "items": [
+                     {
+                       "type": "TextBlock",
+                       "text": cityTemp,
+                       "size": "extraLarge",
+                       "spacing": "none"
+                     }
+                   ]
+                 },
+                 {
+                   "type": "Column",
+                   "width": "stretch",
+                   "items": [
+                     {
+                       "type": "TextBlock",
+                       "text": "°F",
+                       "weight": "bolder",
+                       "spacing": "small"
+                     }
+                   ]
+                 },
+                 {
+                   "type": "Column",
+                   "width": "stretch",
+                   "items": [
+                     {
+                       "type": "TextBlock",
+                       "text": "High: " + cityTempHi,
+                       "horizontalAlignment": "left"
+                     },
+                     {
+                       "type": "TextBlock",
+                       "text": "Low : " + cityTempLo,
+                       "horizontalAlignment": "left",
+                       "spacing": "none"
+                     }
+                   ]
+                 }
+               ]
+             }
+           ]
        });
      }
 
@@ -572,7 +735,7 @@ class DialogHelper {
          "body": [
            {
             "type": "TextBlock",
-            "text": "Archer Reports",
+            "text": "Cognos Reports",
             "weight": "bolder",
             "isSubtle": false
            },

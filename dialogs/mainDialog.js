@@ -11,6 +11,7 @@ const { SelectReportResultDialog } = require('./selectReportResultDialog');
 const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
 const { SelectGlossaryTermResultDialog } = require('./selectGlossaryTermResultDialog');
 const { SearchGlossaryTermDialog } = require('./searchGlossaryTermDialog');
+const { SearchReportDialog } = require('./searchReportDialog');
 const { GuestLogInDialog } = require('./guestLogInDialog');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
@@ -19,6 +20,7 @@ const CHOICE_PROMPT = 'choicePrompt';
 const TEXT_PROMPT = 'textPrompt';
 const SELECT_GLOSSARY_TERM_DIALOG = 'selectGlossaryTermDialog';
 const SEARCH_GLOSSARY_TERM_DIALOG = 'searchGlossaryTermDialog';
+const SEARCH_REPORT_DIALOG = 'searchReportDialog';
 const GUEST_LOG_IN_DIALOG = 'guestLogInDialog';
 
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
@@ -47,6 +49,7 @@ class MainDialog extends LogoutDialog {
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new SearchGlossaryTermDialog(SEARCH_GLOSSARY_TERM_DIALOG))
+            .addDialog(new SearchReportDialog(SEARCH_REPORT_DIALOG))
             .addDialog(new GuestLogInDialog(GUEST_LOG_IN_DIALOG))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.promptStep.bind(this),
@@ -123,29 +126,15 @@ class MainDialog extends LogoutDialog {
                 //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
                 return await step.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
                 break;
-            case 'ACTO':
-                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-                return await step.endDialog();
+            case 'Select a Report':
+                //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
+                return await this.selectReportDialog.destinationStep(step);
                 break;
-            case 'FINO':
-                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-                return await step.endDialog();
+            case 'Search Reports':
+                //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
+                return await step.beginDialog(SEARCH_REPORT_DIALOG);
                 break;
-            case 'Member':
 
-                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-                // return await step.prompt(CHOICE_PROMPT, {
-                //     prompt: '',
-                //     choices: ChoiceFactory.toChoices(['Log In', 'Log In As Guest'])
-                // });
-
-                return await step.endDialog();
-
-                break;
-            case 'Employer':
-                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-                return await step.endDialog();
-                break;
 
             default:
                 //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
@@ -158,7 +147,7 @@ class MainDialog extends LogoutDialog {
 
                   await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Dont Forget about the Chilli Cook-off and Halloween Costume Contest','Its on Thursday, October 31st from 11am to 1pm, in the LPN 1st Floor Atrium')] });
                   await step.context.sendActivity({ attachments: [this.dialogHelper.createImageCard()] });
-                  await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest !!!','')] });
+                  await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest!','')] });
                   this.state.statusUpdate = true
 
                 }
@@ -238,8 +227,16 @@ class MainDialog extends LogoutDialog {
 
                     break;
                 case 'Cognos Reports':
-                    await this.selectReportDialog.destinationStep(step);
+
+                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select a Report or Search Reports?','')] });
+
+                    await step.prompt(CHOICE_PROMPT, {
+                        prompt: '',
+                        choices: ChoiceFactory.toChoices(['Select a Report', 'Search Reports'])
+                    });
+
                     break;
+
                 default:
                     //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
                 }
