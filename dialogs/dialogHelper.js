@@ -560,9 +560,9 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
                                               "width": "1000px",
-                                              "height": "2px"
+                                              "height": "2px",
+                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png"
                                           }
                                       ],
                                       "horizontalAlignment": "Center",
@@ -588,9 +588,9 @@ class DialogHelper {
                                       "items": [
                                           {
                                               "type": "Image",
-                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png",
                                               "width": "1000px",
-                                              "height": "2px"
+                                              "height": "2px",
+                                              "url": "http://messagecardplayground.azurewebsites.net/assets/graydot2x2.png"
                                           }
                                       ],
                                       "spacing": "None",
