@@ -807,7 +807,7 @@ class DialogHelper {
                    },
                    {
                      "type": "TextBlock",
-                     "text": "Report Language:",
+                     "text": "Text Language:",
                      "weight": "bolder",
                      "size": "small",
                      "separator": true
