@@ -104,10 +104,10 @@ class SelectReportDialog extends CancelAndHelpDialog {
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createComboListCard('Please Select a Report', this.state.reportNameSearch, 'report_name_selector_value')] });
 
-      // await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
-      //
-      // var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
-      // await stepContext.context.sendActivity(reply);
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
+
+      var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
+      await stepContext.context.sendActivity(reply);
 
       return await stepContext.endDialog('End Dialog');
     }
