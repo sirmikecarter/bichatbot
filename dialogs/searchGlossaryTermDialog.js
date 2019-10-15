@@ -284,7 +284,7 @@ class SearchGlossaryTermDialog extends CancelAndHelpDialog {
 
       await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
-      var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout', 'Search the Glossary']);
+      var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout', 'Glossary Search']);
       await stepContext.context.sendActivity(reply);
 
       return await stepContext.endDialog('End Dialog');

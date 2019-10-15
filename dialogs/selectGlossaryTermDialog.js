@@ -40,7 +40,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
       switch (view) {
 
-      case 'Single-View Glossary':
+      case 'Select 1 Term':
 
       const client = new SimpleGraphClient(tokenResponse.token);
       const me = await client.getMe();
@@ -96,7 +96,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
       break;
 
-      case 'Multi-View Glossary':
+      case 'See All Terms':
 
         const clientNew = new SimpleGraphClient(tokenResponse.token);
         const meNew = await clientNew.getMe();

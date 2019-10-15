@@ -25,7 +25,8 @@ class GuestLogInDialog extends CancelAndHelpDialog {
           reportNameSearch: [],
           termArray: [],
           userDivision: '',
-          itemCount: ''
+          itemCount: '',
+          itemCountDivision: ''
         };
 
         this.addDialog(new TextPrompt(TEXT_PROMPT))
@@ -172,6 +173,31 @@ class GuestLogInDialog extends CancelAndHelpDialog {
 
         if (response){
 
+          self.state.itemCountDivision = response.data.value.length
+
+
+       }
+
+      }).catch((error)=>{
+             console.log(error);
+      });
+
+      // Get ALl Term Count
+
+      await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
+              { params: {
+                'api-version': '2019-05-06',
+                'search': '*'
+                },
+              headers: {
+                'api-key': process.env.GlossarySearchServiceKey,
+                'ContentType': 'application/json'
+        }
+
+      }).then(response => {
+
+        if (response){
+
           self.state.itemCount = response.data.value.length
 
 
@@ -182,7 +208,7 @@ class GuestLogInDialog extends CancelAndHelpDialog {
       });
 
 
-      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I see there are ' + self.state.itemCount + ' terms in the business glossary that are defined by your division','Please Login to see additional information')] });
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...I see there are '+self.state.itemCount+' Terms in the Business Glossary and ' + self.state.itemCountDivision + ' of those Terms are defined by your division ('+searchString+')','Please Login to see additional information')] });
 
       return await stepContext.endDialog('End Dialog');
 

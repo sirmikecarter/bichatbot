@@ -116,13 +116,13 @@ class MainDialog extends LogoutDialog {
           }else{
 
             switch (step.context.activity.text) {
-            case 'Single-View Glossary':
+            case 'Select 1 Term':
                 return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
                 break;
-            case 'Multi-View Glossary':
+            case 'See All Terms':
                 return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
                 break;
-            case 'Search the Glossary':
+            case 'Glossary Search':
                 //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
                 return await step.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
                 break;
@@ -218,11 +218,11 @@ class MainDialog extends LogoutDialog {
                     //await this.selectGlossaryTermDialog.filterStep(step);
                     //await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG);
 
-                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Single-View Glossary, Multi-View Glossary or Search the Glossary?','')] });
+                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select 1 Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
 
                     await step.prompt(CHOICE_PROMPT, {
                         prompt: '',
-                        choices: ChoiceFactory.toChoices(['Single-View Glossary', 'Multi-View Glossary', 'Search the Glossary'])
+                        choices: ChoiceFactory.toChoices(['Select 1 Term', 'See All Terms', 'Glossary Search'])
                     });
 
                     break;
