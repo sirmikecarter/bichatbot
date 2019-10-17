@@ -117,10 +117,35 @@ class SelectGlossaryTermResultDialog {
         // console.log(self.state.termArray)
 
         if (self.state.termArray.length > 1){
+          console.log(self.state.termArray.length)
           await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Also Found a Similar Term:','')] });
+
+          switch (self.state.termArray.length) {
+
+          case 2:
+
           await turnContext.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[1].definedby, self.state.termArray[1].glossaryterm, self.state.termArray[1].description, self.state.termArray[1].definedby, self.state.termArray[1].output, self.state.termArray[1].related)] });
 
+          break;
+
+
+          case 3:
+
+          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[1].definedby, self.state.termArray[1].glossaryterm, self.state.termArray[1].description, self.state.termArray[1].definedby, self.state.termArray[1].output, self.state.termArray[1].related),
+              this.dialogHelper.createGlossaryCard(self.state.termArray[2].definedby, self.state.termArray[2].glossaryterm, self.state.termArray[2].description, self.state.termArray[2].definedby, self.state.termArray[2].output, self.state.termArray[2].related)],
+          attachmentLayout: AttachmentLayoutTypes.Carousel });
+
+          break;
+
         }
+
+
+
+        }
+
+
+
+
 
         // var myTimer = setInterval(function(){ console.log('waiting'); }, 2000);
         // clearInterval(myTimer)

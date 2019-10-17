@@ -8,6 +8,7 @@ const { DialogHelper } = require('./dialogHelper');
 const { GuestLogInDialog } = require('./guestLogInDialog');
 const { SearchGlossaryTermDialog } = require('./searchGlossaryTermDialog');
 const { SearchReportDialog } = require('./searchReportDialog');
+const { SelectSportsTeamDialog } = require('./selectSportsTeamDialog');
 const axios = require('axios');
 var arraySort = require('array-sort');
 
@@ -15,7 +16,7 @@ var arraySort = require('array-sort');
 const CHOICE_PROMPT = 'choicePrompt';
 const OAUTH_PROMPT = 'oAuthPrompt';
 const GUEST_LOG_IN_DIALOG = 'guestLogInDialog';
-const SEARCH_GLOSSARY_TERM_DIALOG = 'searchGlossaryTermDialog';
+const SELECT_SPORTS_TEAM_DIALOG = 'selectSportsTeamDialog';
 const SEARCH_REPORT_DIALOG = 'searchReportDialog';
 const QNA_TOP_N = 1;
 const QNA_CONFIDENCE_THRESHOLD = 0.5;
@@ -32,6 +33,7 @@ class LogoutDialog extends ComponentDialog {
         cityTempHi: '',
         cityTempLo: '',
         teamId: '',
+        teamIdMLB: '',
         teamName: '',
         teamBadge: '',
         homeScore: '',
@@ -56,6 +58,8 @@ class LogoutDialog extends ComponentDialog {
         termArray: []
       };
 
+      this.selectSportsTeamDialog = new SelectSportsTeamDialog();
+
       const luisApplication = {
           applicationId: process.env.LuisAppId,
           azureRegion: process.env.LuisAPIHostName,
@@ -77,6 +81,8 @@ class LogoutDialog extends ComponentDialog {
       });
 
       this.luisRecognizer = new LuisRecognizer(luisApplication, luisPredictionOptions);
+
+      this.addDialog(new SelectSportsTeamDialog(SELECT_SPORTS_TEAM_DIALOG))
 
   }
 
@@ -881,6 +887,7 @@ class LogoutDialog extends ComponentDialog {
                 var self = this;
 
                 self.state.teamId = ''
+                self.state.teamIdMLB = ''
                 self.state.homeTeam = ''
                 self.state.homeTeamBadge = ''
                 self.state.homeTeamId = ''
@@ -913,6 +920,43 @@ class LogoutDialog extends ComponentDialog {
                   }).catch((error)=>{
                          console.log(error);
                   });
+
+                  await axios.get('https://www.thesportsdb.com/api/v1/json/1/search_all_teams.php?l=mlb').then(response => {
+
+                      if (response){
+
+                      var itemCountMLB = response.data.teams.length
+
+                      for (var i = 0; i < itemCountMLB; i++)
+                      {
+                        var teamLowercaseMLB = response.data.teams[i].strTeam.toLowerCase()
+                        if(teamLowercaseMLB.indexOf(teamName) !== -1){
+                          //console.log(response.data.teams[i].strTeam.includes(teamName))
+                          self.state.teamIdMLB = response.data.teams[i].idTeam
+                        }
+
+                      }
+
+
+                     }
+
+                    }).catch((error)=>{
+                           console.log(error);
+                    });
+
+                    if(self.state.teamId === ''){
+                      self.state.teamId = self.state.teamIdMLB
+                    }else if(self.state.teamId !== '' && self.state.teamIdMLB !== '' ){
+                      console.log(self.state.teamId)
+                      console.log(self.state.teamIdMLB)
+                      return await innerDc.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamId, team2: self.state.teamIdMLB});
+                      //return await this.selectSportsTeamDialog.destinationStep(innerDc, self.state.teamId, self.state.teamIdMLB);
+                    }
+
+                    // console.log(self.state.teamId)
+                    // console.log(self.state.teamIdMLB)
+
+                    if(self.state.teamId){
 
                   await axios.get('https://www.thesportsdb.com/api/v1/json/1/eventslast.php?id='+self.state.teamId).then(response => {
 
@@ -961,6 +1005,12 @@ class LogoutDialog extends ComponentDialog {
 
 
                 await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createSportCard(self.state.dateEvent, self.state.homeTeam,self.state.homeScore,self.state.homeTeamBadge, self.state.awayTeam,self.state.awayScore, self.state.awayTeamBadge)] });
+
+              }else{
+
+                await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...No Results Found','')] });
+
+              }
 
                 break;
               case 'Log_In_As_Guest':
