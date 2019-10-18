@@ -33,6 +33,7 @@ class LogoutDialog extends ComponentDialog {
         cityTempHi: '',
         cityTempLo: '',
         teamId: '',
+        teamIdNFL: '',
         teamIdMLB: '',
         teamName: '',
         teamBadge: '',
@@ -887,6 +888,7 @@ class LogoutDialog extends ComponentDialog {
                 var self = this;
 
                 self.state.teamId = ''
+                self.state.teamIdNFL = ''
                 self.state.teamIdMLB = ''
                 self.state.homeTeam = ''
                 self.state.homeTeamBadge = ''
@@ -909,7 +911,7 @@ class LogoutDialog extends ComponentDialog {
                       var teamLowercase = response.data.teams[i].strTeam.toLowerCase()
                       if(teamLowercase.indexOf(teamName) !== -1){
                         //console.log(response.data.teams[i].strTeam.includes(teamName))
-                        self.state.teamId = response.data.teams[i].idTeam
+                        self.state.teamIdNFL = response.data.teams[i].idTeam
                       }
 
                     }
@@ -944,25 +946,24 @@ class LogoutDialog extends ComponentDialog {
                            console.log(error);
                     });
 
-                    if(self.state.teamId === ''){
+                    if(self.state.teamIdNFL !== '' && self.state.teamIdMLB === '' ){
+                      self.state.teamId = self.state.teamIdNFL
+
+                    }else if(self.state.teamIdNFL === '' && self.state.teamIdMLB !== '' ){
                       self.state.teamId = self.state.teamIdMLB
-                    }else if(self.state.teamId !== '' && self.state.teamIdMLB !== '' ){
+
+                    }else if(self.state.teamIdNFL !== '' && self.state.teamIdMLB !== '' ){
                       console.log(self.state.teamId)
                       console.log(self.state.teamIdMLB)
-                      return await innerDc.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamId, team2: self.state.teamIdMLB});
-                      //return await this.selectSportsTeamDialog.destinationStep(innerDc, self.state.teamId, self.state.teamIdMLB);
+                      return await innerDc.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamIdNFL, team2: self.state.teamIdMLB});
                     }
 
-                    // console.log(self.state.teamId)
-                    // console.log(self.state.teamIdMLB)
 
                     if(self.state.teamId){
 
-                  await axios.get('https://www.thesportsdb.com/api/v1/json/1/eventslast.php?id='+self.state.teamId).then(response => {
+                      await axios.get('https://www.thesportsdb.com/api/v1/json/1/eventslast.php?id='+self.state.teamId).then(response => {
 
                       if (response){
-
-                        //console.log(response.data.results[0])
 
                         self.state.homeTeam = response.data.results[0].strHomeTeam
                         self.state.homeTeamId = response.data.results[0].idHomeTeam
