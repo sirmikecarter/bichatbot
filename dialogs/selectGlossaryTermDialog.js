@@ -40,7 +40,7 @@ class SelectGlossaryTermDialog extends CancelAndHelpDialog {
 
       switch (view) {
 
-      case 'Select 1 Term':
+      case 'Select A Term':
 
       const client = new SimpleGraphClient(tokenResponse.token);
       const me = await client.getMe();

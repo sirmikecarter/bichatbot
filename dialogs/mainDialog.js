@@ -116,7 +116,7 @@ class MainDialog extends LogoutDialog {
           }else{
 
             switch (step.context.activity.text) {
-            case 'Select 1 Term':
+            case 'Select A Term':
                 return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
                 break;
             case 'See All Terms':
@@ -143,14 +143,14 @@ class MainDialog extends LogoutDialog {
 
                 // console.log(this.state.statusUpdate)
                 //
-                if(this.state.statusUpdate === false){
-
-                  await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Dont Forget about the Chilli Cook-off and Halloween Costume Contest','Its on Thursday, October 31st from 11am to 1pm, in the LPN 1st Floor Atrium')] });
-                  await step.context.sendActivity({ attachments: [this.dialogHelper.createImageCard()] });
-                  await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest!','')] });
-                  this.state.statusUpdate = true
-
-                }
+                // if(this.state.statusUpdate === false){
+                //
+                //   await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Dont Forget about the Chilli Cook-off and Halloween Costume Contest','Its on Thursday, October 31st from 11am to 1pm, in the LPN 1st Floor Atrium')] });
+                //   await step.context.sendActivity({ attachments: [this.dialogHelper.createImageCard()] });
+                //   await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest!','')] });
+                //   this.state.statusUpdate = true
+                //
+                // }
 
 
                 await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
@@ -218,11 +218,11 @@ class MainDialog extends LogoutDialog {
                     //await this.selectGlossaryTermDialog.filterStep(step);
                     //await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG);
 
-                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select 1 Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
+                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select A Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
 
                     await step.prompt(CHOICE_PROMPT, {
                         prompt: '',
-                        choices: ChoiceFactory.toChoices(['Select 1 Term', 'See All Terms', 'Glossary Search'])
+                        choices: ChoiceFactory.toChoices(['Select A Term', 'See All Terms', 'Glossary Search'])
                     });
 
                     break;

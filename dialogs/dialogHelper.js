@@ -407,6 +407,504 @@ class DialogHelper {
        });
      }
 
+     createAppApprovalCard(appName, appDesc, appType, appId, appStatus, appStatusDate, appNote1, appNote2, appNote3) {
+
+     return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+            "type": "TextBlock",
+            "text": "Application Portfolio",
+            "weight": "bolder",
+            "isSubtle": false
+           },
+           {
+             "type": "TextBlock",
+             "text": appName,
+             "weight": "bolder",
+             "size": "medium",
+             "separator": true
+           },
+           {
+             "type": "TextBlock",
+             "text": appDesc,
+             "wrap": true
+           }
+         ],
+         "actions": [
+             {
+               "type": "Action.ShowCard",
+               "title": "Status",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Status",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Status:",
+                         "value": appStatus,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Status Date:",
+                         "value": appStatusDate,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             },
+             {
+               "type": "Action.ShowCard",
+               "title": "Notes",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Notes",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "1",
+                         "value": appNote1,
+                         "wrap": false
+                       },
+                       {
+                         "title": "2",
+                         "value": appNote2,
+                         "wrap": false
+                       },
+                       {
+                         "title": "3",
+                         "value": appNote3,
+                         "wrap": false
+                       }
+                     ]
+                   },
+                 ]
+               }
+             },
+             {
+               "type": "Action.ShowCard",
+               "title": "Additional Information",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Additional Information",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "ID:",
+                         "value": appId,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Type:",
+                         "value": appType,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             }
+           ]
+       });
+     }
+
+
+     createAppInstalledCard(appName, appClass, appId, appInstalled, appCategory, appSubCategory, appStatusDate, appPublisher, appVersion, appEdition, appReleaseDate, appEndOfSales, appEndofLife, appEndOfSupport, appEndofExtendedSupport) {
+
+     return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+            "type": "TextBlock",
+            "text": "Flexera",
+            "weight": "bolder",
+            "isSubtle": false
+           },
+           {
+             "type": "TextBlock",
+             "text": appName,
+             "weight": "bolder",
+             "size": "medium",
+             "separator": true
+           },
+           {
+             "type": "TextBlock",
+             "text": appClass,
+             "wrap": true
+           }
+         ],
+         "actions": [
+             {
+               "type": "Action.ShowCard",
+               "title": "Application Information",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Application Information",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Installed:",
+                         "value": appInstalled,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Category:",
+                         "value": appCategory,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Sub-Category:",
+                         "value": appSubCategory,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Flexera ID:",
+                         "value": appId,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             },
+             {
+               "type": "Action.ShowCard",
+               "title": "Vendor Information",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Vendor Information",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Publisher",
+                         "value": appPublisher,
+                         "wrap": false
+                       },
+                       {
+                         "title": "Version",
+                         "value": appVersion,
+                         "wrap": false
+                       },
+                       {
+                         "title": "Edition",
+                         "value": appEdition,
+                         "wrap": false
+                       },
+                       {
+                         "title": "Release Date",
+                         "value": appReleaseDate,
+                         "wrap": false
+                       },
+                       {
+                         "title": "End of Sales",
+                         "value": appEndOfSales,
+                         "wrap": false
+                       },
+                       {
+                         "title": "End of Life",
+                         "value": appEndofLife,
+                         "wrap": false
+                       },
+                       {
+                         "title": "End of Support",
+                         "value": appEndOfSupport,
+                         "wrap": false
+                       },
+                       {
+                         "title": "End of Extended Support",
+                         "value": appEndofExtendedSupport,
+                         "wrap": false
+                       }
+                     ]
+                   },
+                 ]
+               }
+             }
+           ]
+       });
+     }
+
+     createRAWCard(rawIdTitle, rawName, rawDesc, rawCategory, rawCategoryOther, rawPhase, rawType, rawBizLine, rawSubmitter, rawSubmitterDiv, rawSubmitterUnit, rawOwner, rawOwnerDiv, rawOwnerUnit, rawDateSubmit, rawDateComplete, rawId) {
+
+     return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+            "type": "TextBlock",
+            "text": rawIdTitle,
+            "weight": "bolder",
+            "isSubtle": false
+           },
+           {
+             "type": "TextBlock",
+             "text": rawName,
+             "weight": "bolder",
+             "size": "medium",
+             "separator": true
+           },
+           {
+             "type": "TextBlock",
+             "text": rawDesc,
+             "wrap": true
+           }
+         ],
+         "actions": [
+             {
+               "type": "Action.ShowCard",
+               "title": "Request Information",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Request Information",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Request ID",
+                         "value": rawId,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Date Submitted:",
+                         "value": rawDateSubmit,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Date Completed:",
+                         "value": rawDateComplete,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Category",
+                         "value": rawCategory,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Sub-Category",
+                         "value": rawCategoryOther,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Phase",
+                         "value": rawPhase,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Type",
+                         "value": rawType,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Business Line",
+                         "value": rawBizLine,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Submitter",
+                         "value": rawSubmitter,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Submitter Division",
+                         "value": rawSubmitterDiv,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Submitter Unit",
+                         "value": rawSubmitterUnit,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Request Owner",
+                         "value": rawOwner,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Request Division",
+                         "value": rawOwnerDiv,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Request Unit",
+                         "value": rawOwnerUnit,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             }
+           ]
+       });
+     }
+
+     createFinancialCard(financialId, financialTitle, financialDesc, financialYear, financialContact, financialDivision, financialCost, financialApptioCode, financialPriorPO, financialQuantity) {
+
+     return CardFactory.adaptiveCard({
+         "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+         "type": "AdaptiveCard",
+         "version": "1.0",
+         "body": [
+           {
+            "type": "TextBlock",
+            "text": "Spending Plan",
+            "weight": "bolder",
+            "isSubtle": false
+           },
+           {
+             "type": "TextBlock",
+             "text": financialTitle,
+             "weight": "bolder",
+             "size": "medium",
+             "separator": true
+           },
+           {
+             "type": "TextBlock",
+             "text": financialDesc,
+             "wrap": true
+           }
+         ],
+         "actions": [
+             {
+               "type": "Action.ShowCard",
+               "title": "Purchase Order",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Purchase Order",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Cost:",
+                         "value": "$ " + financialCost,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Quantity:",
+                         "value": financialQuantity,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Year:",
+                         "value": financialYear,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Prior PO#:",
+                         "value": financialPriorPO,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             },
+             {
+               "type": "Action.ShowCard",
+               "title": "Additional Information",
+               "card": {
+                 "type": "AdaptiveCard",
+                 "body": [
+                   {
+                     "type": "TextBlock",
+                     "text": "Additional Information",
+                     "weight": "bolder",
+                     "size": "medium",
+                     "separator": true
+                   },
+                   {
+                     "type": "FactSet",
+                     "facts": [
+                       {
+                         "title": "Contact:",
+                         "value": financialContact,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Division:",
+                         "value": financialDivision,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Item ID:",
+                         "value": financialId,
+                         "wrap": true
+                       },
+                       {
+                         "title": "Apptio Code:",
+                         "value": financialApptioCode,
+                         "wrap": true
+                       }
+                     ]
+                   },
+                 ]
+               }
+             }
+           ]
+       });
+     }
+
      createGlossaryCard(division, term, description, definedBy, output, related) {
 
      return CardFactory.adaptiveCard({
