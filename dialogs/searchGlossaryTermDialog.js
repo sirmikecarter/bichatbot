@@ -1,7 +1,6 @@
-const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet, OAuthPrompt } = require('botbuilder-dialogs');
+const { ComponentDialog, ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet, OAuthPrompt } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { LuisApplication, LuisPredictionOptions, LuisRecognizer } = require('botbuilder-ai');
-const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { DialogHelper } = require('./dialogHelper');
 const { SimpleGraphClient } = require('../simple-graph-client');
 const { OAuthHelpers } = require('../oAuthHelpers');
@@ -15,7 +14,7 @@ const OAUTH_PROMPT = 'OAuthPrompt';
 
 const axios = require('axios');
 
-class SearchGlossaryTermDialog extends CancelAndHelpDialog {
+class SearchGlossaryTermDialog extends ComponentDialog {
     constructor(id) {
         super(id || 'searchGlossaryTermDialog');
 

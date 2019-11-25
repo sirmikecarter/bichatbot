@@ -1,6 +1,5 @@
-const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
+const { ComponentDialog, ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
-const { CancelAndHelpDialog } = require('./cancelAndHelpDialog');
 const { DialogHelper } = require('./dialogHelper');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
@@ -10,7 +9,7 @@ const WATERFALL_DIALOG = 'waterfallDialog';
 
 const axios = require('axios');
 
-class SelectReportDialog extends CancelAndHelpDialog {
+class SelectReportDialog extends ComponentDialog {
     constructor(id) {
         super(id || 'selectReportDialog');
 

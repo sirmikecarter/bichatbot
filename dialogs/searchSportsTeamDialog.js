@@ -1,24 +1,26 @@
 const { ComponentDialog, ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { DialogHelper } = require('./dialogHelper');
+const axios = require('axios');
+var arraySort = require('array-sort');
+const { SelectSportsTeamDialog } = require('./selectSportsTeamDialog');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const TEXT_PROMPT = 'textPrompt';
 const WATERFALL_DIALOG = 'waterfallDialog';
 
-const axios = require('axios');
+const SELECT_SPORTS_TEAM_DIALOG = 'selectSportsTeamDialog';
 
-class SelectSportsTeamDialog extends ComponentDialog {
+class SearchSportsTeamDialog extends ComponentDialog {
     constructor(id) {
-        super(id || 'selectSportsTeamDialog');
+        super(id || 'searchSportsTeamDialog');
 
         this.dialogHelper = new DialogHelper();
 
         this.state = {
-          teamName1: '',
-          teamName2: '',
           teamId: '',
+          teamIdNFL: '',
           teamIdMLB: '',
           teamName: '',
           teamBadge: '',
@@ -30,11 +32,11 @@ class SelectSportsTeamDialog extends ComponentDialog {
           awayTeam: '',
           awayTeamId: '',
           awayTeamBadge: '',
-          dateEvent: '',
+          dateEvent: ''
         };
 
-
-        this.addDialog(new TextPrompt(TEXT_PROMPT))
+        this.addDialog(new SelectSportsTeamDialog(SELECT_SPORTS_TEAM_DIALOG))
+            .addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
             .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
@@ -72,62 +74,12 @@ class SelectSportsTeamDialog extends ComponentDialog {
      */
     async destinationStep(stepContext) {
 
-      var self = this;
-      self.state.teamName1 = ''
-      self.state.teamName2 = ''
-
-      console.log('TEAM1: ' + stepContext._info.options.team1)
-      console.log('TEAM2: ' + stepContext._info.options.team2)
-
-      await axios.get('https://www.thesportsdb.com/api/v1/json/1/lookupteam.php?id='+stepContext._info.options.team1).then(response => {
-
-          if (response){
-
-          self.state.teamName1 = response.data.teams[0].strTeam
-
-         }
-
-        }).catch((error)=>{
-               console.log(error);
-        });
-
-        await axios.get('https://www.thesportsdb.com/api/v1/json/1/lookupteam.php?id='+stepContext._info.options.team2).then(response => {
-
-            if (response){
-
-            self.state.teamName2 = response.data.teams[0].strTeam
-
-           }
-
-          }).catch((error)=>{
-                 console.log(error);
-          });
-
-          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...There are two teams with the same Name, please select the correct one','')] });
-
-          return await stepContext.prompt(CHOICE_PROMPT, {
-              prompt: '',
-              choices: ChoiceFactory.toChoices([self.state.teamName1, self.state.teamName2])
-          });
-
-
-      // await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
-      //
-      // var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
-      // await stepContext.context.sendActivity(reply);
-
-      //return await stepContext.endDialog('End Dialog');
-    }
-
-    async resultStep(stepContext) {
-
-      //console.log(stepContext.result.value)
-
-      const teamName = stepContext.result.value.toLowerCase();
+      const searchTerm = stepContext._info.options.sports_team;
 
       var self = this;
 
       self.state.teamId = ''
+      self.state.teamIdNFL = ''
       self.state.teamIdMLB = ''
       self.state.homeTeam = ''
       self.state.homeTeamBadge = ''
@@ -148,9 +100,8 @@ class SelectSportsTeamDialog extends ComponentDialog {
           for (var i = 0; i < itemCount; i++)
           {
             var teamLowercase = response.data.teams[i].strTeam.toLowerCase()
-            if(teamLowercase.indexOf(teamName) !== -1){
-              //console.log(response.data.teams[i].strTeam.includes(teamName))
-              self.state.teamId = response.data.teams[i].idTeam
+            if(teamLowercase.indexOf(searchTerm) !== -1){
+              self.state.teamIdNFL = response.data.teams[i].idTeam
             }
 
           }
@@ -171,8 +122,7 @@ class SelectSportsTeamDialog extends ComponentDialog {
             for (var i = 0; i < itemCountMLB; i++)
             {
               var teamLowercaseMLB = response.data.teams[i].strTeam.toLowerCase()
-              if(teamLowercaseMLB.indexOf(teamName) !== -1){
-                //console.log(response.data.teams[i].strTeam.includes(teamName))
+              if(teamLowercaseMLB.indexOf(searchTerm) !== -1){
                 self.state.teamIdMLB = response.data.teams[i].idTeam
               }
 
@@ -185,27 +135,24 @@ class SelectSportsTeamDialog extends ComponentDialog {
                  console.log(error);
           });
 
-          if(self.state.teamId === ''){
+          if(self.state.teamIdNFL !== '' && self.state.teamIdMLB === '' ){
+            self.state.teamId = self.state.teamIdNFL
+
+          }else if(self.state.teamIdNFL === '' && self.state.teamIdMLB !== '' ){
             self.state.teamId = self.state.teamIdMLB
+
+          }else if(self.state.teamIdNFL !== '' && self.state.teamIdMLB !== '' ){
+            console.log(self.state.teamId)
+            console.log(self.state.teamIdMLB)
+            return await stepContext.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamIdNFL, team2: self.state.teamIdMLB});
           }
 
-          // if(self.state.teamId !== '' && self.state.teamIdMLB !== '' ){
-          //   console.log(self.state.teamId)
-          //   console.log(self.state.teamIdMLB)
-          //   return await innerDc.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamId, team2: self.state.teamIdMLB});
-          //   //return await this.selectSportsTeamDialog.destinationStep(innerDc, self.state.teamId, self.state.teamIdMLB);
-          // }
-
-          // console.log(self.state.teamId)
-          // console.log(self.state.teamIdMLB)
 
           if(self.state.teamId){
 
-        await axios.get('https://www.thesportsdb.com/api/v1/json/1/eventslast.php?id='+self.state.teamId).then(response => {
+            await axios.get('https://www.thesportsdb.com/api/v1/json/1/eventslast.php?id='+self.state.teamId).then(response => {
 
             if (response){
-
-              //console.log(response.data.results[0])
 
               self.state.homeTeam = response.data.results[0].strHomeTeam
               self.state.homeTeamId = response.data.results[0].idHomeTeam
@@ -257,7 +204,10 @@ class SelectSportsTeamDialog extends ComponentDialog {
 
 
 
+      return await stepContext.endDialog('End Dialog');
+    }
 
+    async resultStep(stepContext) {
 
       return await stepContext.endDialog('End Dialog');
 
@@ -265,4 +215,4 @@ class SelectSportsTeamDialog extends ComponentDialog {
 
 }
 
-module.exports.SelectSportsTeamDialog = SelectSportsTeamDialog;
+module.exports.SearchSportsTeamDialog = SearchSportsTeamDialog;
