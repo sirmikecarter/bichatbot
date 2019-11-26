@@ -38,10 +38,10 @@ const QNA_TOP_N = 1;
 const QNA_CONFIDENCE_THRESHOLD = 0.5;
 
 
-class LogoutDialog extends ComponentDialog {
+class MenuDialog extends ComponentDialog {
 
   constructor(id) {
-      super(id || 'logoutDialog');
+      super(id || 'menuDialog');
 
       this.state = {
 
@@ -241,4 +241,4 @@ class LogoutDialog extends ComponentDialog {
     }
 }
 
-module.exports.LogoutDialog = LogoutDialog;
+module.exports.MenuDialog = MenuDialog;

@@ -3,7 +3,7 @@
 
 const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog, ChoiceFactory } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
-const { LogoutDialog } = require('./logoutDialog');
+const { MenuDialog } = require('./menuDialog');
 const { OAuthHelpers } = require('../oAuthHelpers');
 const { DialogHelper } = require('./dialogHelper');
 const { SelectReportDialog } = require('./selectReportDialog');
@@ -25,7 +25,7 @@ const GUEST_LOG_IN_DIALOG = 'guestLogInDialog';
 
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
 
-class MainDialog extends LogoutDialog {
+class MainDialog extends MenuDialog {
     constructor() {
         super('MainDialog');
 
