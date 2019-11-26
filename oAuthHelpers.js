@@ -71,7 +71,7 @@ class OAuthHelpers {
         //
          if (me.jobTitle === 'ACTO'){
            await context.sendActivity({ attachments: [this.dialogHelper.createUserCard('https://www2.deloitte.com/content/dam/Deloitte/us/Images/promo_images/profile-pictures/us-emily-mossburg.jpg/_jcr_content/renditions/cq5dam.web.250.250.mobile.jpeg', me.displayName, me.jobTitle)] });
-           await context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You are 3 years away from Retiring !!!','')] });
+           // await context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You are 3 years away from Retiring !!!','')] });
          }
 
       //  await context.sendActivity({ attachments: [this.dialogHelper.createUserCard(me.displayName, 'Financial Specialist', me.jobTitle)] });
