@@ -4,7 +4,7 @@ const { ComponentDialog, ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt,
 const { LuisApplication, LuisPredictionOptions, LuisRecognizer, QnAMaker } = require('botbuilder-ai');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { ActivityTypes } = require('botbuilder');
-const { DialogHelper } = require('./dialogHelper');
+const { DialogHelper } = require('./helpers/dialogHelper');
 const { GuestLogInDialog } = require('./guestLogInDialog');
 const { SearchGlossaryTermDialog } = require('./searchGlossaryTermDialog');
 const { SearchReportDialog } = require('./searchReportDialog');

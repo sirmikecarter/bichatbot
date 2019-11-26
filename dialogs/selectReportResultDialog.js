@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 const { QnAMaker } = require('botbuilder-ai');
-const { LuisHelper } = require('./luisHelper');
+const { LuisHelper } = require('./helpers/luisHelper');
 const { LuisRecognizer } = require('botbuilder-ai');
-const { DialogHelper } = require('./dialogHelper');
+const { DialogHelper } = require('./helpers/dialogHelper');
 const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const axios = require('axios');

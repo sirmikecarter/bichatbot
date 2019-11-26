@@ -1,9 +1,9 @@
 const { ComponentDialog, ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet, OAuthPrompt } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { LuisApplication, LuisPredictionOptions, LuisRecognizer } = require('botbuilder-ai');
-const { DialogHelper } = require('./dialogHelper');
-const { SimpleGraphClient } = require('../simple-graph-client');
-const { OAuthHelpers } = require('../oAuthHelpers');
+const { DialogHelper } = require('./helpers/dialogHelper');
+const { SimpleGraphClient } = require('./helpers/simple-graph-client');
+const { OAuthHelpers } = require('./helpers/oAuthHelpers');
 var arraySort = require('array-sort');
 
 const CONFIRM_PROMPT = 'confirmPrompt';

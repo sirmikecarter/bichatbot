@@ -4,7 +4,7 @@
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder');
 const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog, ChoiceFactory } = require('botbuilder-dialogs');
 const { SimpleGraphClient } = require('./simple-graph-client');
-const { DialogHelper } = require('./dialogs/dialogHelper');
+const { DialogHelper } = require('./dialogHelper');
 
 const CHOICE_PROMPT = 'choicePrompt';
 

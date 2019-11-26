@@ -1,6 +1,6 @@
 const { ComponentDialog, ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
-const { DialogHelper } = require('./dialogHelper');
+const { DialogHelper } = require('./helpers/dialogHelper');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';

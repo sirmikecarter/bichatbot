@@ -4,8 +4,8 @@
 const { ChoicePrompt, DialogSet, DialogTurnStatus, OAuthPrompt, TextPrompt, WaterfallDialog, ChoiceFactory } = require('botbuilder-dialogs');
 const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { MenuDialog } = require('./menuDialog');
-const { OAuthHelpers } = require('../oAuthHelpers');
-const { DialogHelper } = require('./dialogHelper');
+const { OAuthHelpers } = require('./helpers/oAuthHelpers');
+const { DialogHelper } = require('./helpers/dialogHelper');
 const { SelectReportDialog } = require('./selectReportDialog');
 const { SelectReportResultDialog } = require('./selectReportResultDialog');
 const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
