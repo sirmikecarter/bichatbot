@@ -81,44 +81,44 @@ class MenuDialog extends ComponentDialog {
 
   }
 
-    async onBeginDialog(innerDc, options) {
-        const result = await this.interrupt(innerDc);
+    async onBeginDialog(stepContext, options) {
+        const result = await this.interrupt(stepContext);
         if (result) {
             return result;
         }
 
-        return await super.onBeginDialog(innerDc, options);
+        return await super.onBeginDialog(stepContext, options);
     }
 
-    async onContinueDialog(innerDc) {
-        const result = await this.interrupt(innerDc);
+    async onContinueDialog(stepContext) {
+        const result = await this.interrupt(stepContext);
         if (result) {
             return result;
         }
 
-        return await super.onContinueDialog(innerDc);
+        return await super.onContinueDialog(stepContext);
     }
 
-    async interrupt(innerDc) {
-        if (innerDc.context.activity.type === ActivityTypes.Message) {
-            const text = innerDc.context.activity.text ? innerDc.context.activity.text.toLowerCase() : '';
+    async interrupt(stepContext) {
+        if (stepContext.context.activity.type === ActivityTypes.Message) {
+            const text = stepContext.context.activity.text ? stepContext.context.activity.text.toLowerCase() : '';
             if (text === 'logout') {
                 // The bot adapter encapsulates the authentication processes.
-                const botAdapter = innerDc.context.adapter;
-                await botAdapter.signOutUser(innerDc.context, process.env.ConnectionName);
+                const botAdapter = stepContext.context.adapter;
+                await botAdapter.signOutUser(stepContext.context, process.env.ConnectionName);
 
-                await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You have been signed out.','')] });
+                await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('You have been signed out.','')] });
 
-                await innerDc.prompt(CHOICE_PROMPT, {
+                await stepContext.prompt(CHOICE_PROMPT, {
                     prompt: '',
                     choices: ChoiceFactory.toChoices(['Log In'])
                 });
 
-                //await innerDc.context.sendActivity('You have been signed out.');
-                return await innerDc.cancelAllDialogs();
+                //await stepContext.context.sendActivity('You have been signed out.');
+                return await stepContext.cancelAllDialogs();
             }
 
-            const dispatchResults = await this.luisRecognizer.recognize(innerDc.context);
+            const dispatchResults = await this.luisRecognizer.recognize(stepContext.context);
             const dispatchTopIntent = LuisRecognizer.topIntent(dispatchResults);
 
             console.log(dispatchTopIntent)
@@ -129,16 +129,16 @@ class MenuDialog extends ComponentDialog {
               case 'General':
                   const qnaResult = await this.qnaRecognizer.generateAnswer(dispatchResults.text, QNA_TOP_N, QNA_CONFIDENCE_THRESHOLD);
                   if (!qnaResult || qnaResult.length === 0 || !qnaResult[0].answer){
-                    //await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
+                    //await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
                   }else{
-                    await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
+                    await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
                   }
 
                   break;
               case 'Glossary':
                   const glossaryTerm = dispatchResults.entities.Term[0];
 
-                  return await innerDc.beginDialog(SEARCH_GLOSSARY_TERM_TEXT_DIALOG, { glossary_term: glossaryTerm});
+                  return await stepContext.beginDialog(SEARCH_GLOSSARY_TERM_TEXT_DIALOG, { glossary_term: glossaryTerm});
                   break;
               case 'Reports':
 
@@ -150,66 +150,66 @@ class MenuDialog extends ComponentDialog {
                   const reportName = dispatchResults.entities.Report_Name;
                   const reportOwner = dispatchResults.entities.Report_Owner;
 
-                  return await innerDc.beginDialog(SEARCH_REPORT_TEXT_DIALOG, { report_approver: reportApprover, report_classification: reportClassification, report_description: reportDescription, report_designee: reportDesignee, report_division: reportDivision, report_name: reportName,  report_owner:  reportOwner});
+                  return await stepContext.beginDialog(SEARCH_REPORT_TEXT_DIALOG, { report_approver: reportApprover, report_classification: reportClassification, report_description: reportDescription, report_designee: reportDesignee, report_division: reportDivision, report_name: reportName,  report_owner:  reportOwner});
 
                 break;
               case 'Weather':
 
                 const cityName = dispatchResults.entities.Cities[0];
 
-                return await innerDc.beginDialog(SEARCH_WEATHER_DIALOG, { city_name: cityName});
+                return await stepContext.beginDialog(SEARCH_WEATHER_DIALOG, { city_name: cityName});
                 break;
               case 'Sports':
 
                 const teamName = dispatchResults.entities.Sports_Teams[0].toLowerCase();
 
-                return await innerDc.beginDialog(SEARCH_SPORTS_TEAM_DIALOG, { sports_team: teamName});
+                return await stepContext.beginDialog(SEARCH_SPORTS_TEAM_DIALOG, { sports_team: teamName});
                 break;
               case 'Log_In_As_Guest':
 
-                  return await innerDc.beginDialog(GUEST_LOG_IN_DIALOG);
+                  return await stepContext.beginDialog(GUEST_LOG_IN_DIALOG);
                   break;
               case 'Software_Approved':
 
                 const searchApprovedTerm = dispatchResults.entities.Software_Name[0].toLowerCase();
 
-                return await innerDc.beginDialog(SEARCH_SOFTWARE_APPROVED_DIALOG, { software_name: searchApprovedTerm});
+                return await stepContext.beginDialog(SEARCH_SOFTWARE_APPROVED_DIALOG, { software_name: searchApprovedTerm});
                 break;
 
               case 'Software_Installed':
 
                 const searchInstalledTerm = dispatchResults.entities.Software_Name[0].toLowerCase();
 
-                return await innerDc.beginDialog(SEARCH_SOFTWARE_INSTALLED_DIALOG, { software_name: searchInstalledTerm});
+                return await stepContext.beginDialog(SEARCH_SOFTWARE_INSTALLED_DIALOG, { software_name: searchInstalledTerm});
                 break;
 
               case 'Software_RAW':
 
                 const searchRAWTerm = dispatchResults.entities.Software_Name[0].toLowerCase();
 
-                return await innerDc.beginDialog(SEARCH_SOFTWARE_RAW_DIALOG, { software_name: searchRAWTerm});
+                return await stepContext.beginDialog(SEARCH_SOFTWARE_RAW_DIALOG, { software_name: searchRAWTerm});
                 break;
 
               case 'Software_Financials':
 
                 const searchFinancialTerm = dispatchResults.entities.Software_Name[0].toLowerCase();
 
-                return await innerDc.beginDialog(SEARCH_SOFTWARE_FINANCIAL_DIALOG, { software_name: searchFinancialTerm});
+                return await stepContext.beginDialog(SEARCH_SOFTWARE_FINANCIAL_DIALOG, { software_name: searchFinancialTerm});
                 break;
 
               case 'Software_All':
 
                 const searchAllTerm = dispatchResults.entities.Software_Name[0].toLowerCase();
 
-                await innerDc.beginDialog(SEARCH_SOFTWARE_APPROVED_DIALOG, { software_name: searchAllTerm});
-                await innerDc.beginDialog(SEARCH_SOFTWARE_INSTALLED_DIALOG, { software_name: searchAllTerm});
-                await innerDc.beginDialog(SEARCH_SOFTWARE_RAW_DIALOG, { software_name: searchAllTerm});
-                await innerDc.beginDialog(SEARCH_SOFTWARE_FINANCIAL_DIALOG, { software_name: searchAllTerm});
+                await stepContext.beginDialog(SEARCH_SOFTWARE_APPROVED_DIALOG, { software_name: searchAllTerm});
+                await stepContext.beginDialog(SEARCH_SOFTWARE_INSTALLED_DIALOG, { software_name: searchAllTerm});
+                await stepContext.beginDialog(SEARCH_SOFTWARE_RAW_DIALOG, { software_name: searchAllTerm});
+                await stepContext.beginDialog(SEARCH_SOFTWARE_FINANCIAL_DIALOG, { software_name: searchAllTerm});
 
                 break;
 
               case 'Log_In':
-                // return await innerDc.beginDialog(OAUTH_PROMPT);
+                // return await stepContext.beginDialog(OAUTH_PROMPT);
                 // break;
 
             }
@@ -218,20 +218,20 @@ class MenuDialog extends ComponentDialog {
             // switch (dispatchResults.text) {
             //
             //   case 'ACTO':
-            //     await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-            //       //return await innerDc.beginDialog(OAUTH_PROMPT);
+            //     await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+            //       //return await stepContext.beginDialog(OAUTH_PROMPT);
             //     break;
             //   case 'FINO':
-            //     await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+            //     await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
             //     // return await step.endDialog();
             //     break;
             //   case 'Member':
-            //     await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-            //     //return await innerDc.endDialog();
+            //     await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+            //     //return await stepContext.endDialog();
             //     break;
             //   case 'Employer':
-            //     await innerDc.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
-            //     //return await innerDc.endDialog();
+            //     await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('This session is complete, please refresh the page to restart this session','')] });
+            //     //return await stepContext.endDialog();
             //     break;
             //
             // }

@@ -6,21 +6,24 @@ const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuild
 const { MenuDialog } = require('./menuDialog');
 const { OAuthHelpers } = require('./helpers/oAuthHelpers');
 const { DialogHelper } = require('./helpers/dialogHelper');
+const { SearchReportDialog } = require('./searchReportDialog');
 const { SelectReportDialog } = require('./selectReportDialog');
 const { SelectReportResultDialog } = require('./selectReportResultDialog');
 const { SelectGlossaryTermDialog } = require('./selectGlossaryTermDialog');
 const { SelectGlossaryTermResultDialog } = require('./selectGlossaryTermResultDialog');
 const { SearchGlossaryTermDialog } = require('./searchGlossaryTermDialog');
-const { SearchReportDialog } = require('./searchReportDialog');
 const { GuestLogInDialog } = require('./guestLogInDialog');
 
 const MAIN_WATERFALL_DIALOG = 'mainWaterfallDialog';
 const OAUTH_PROMPT = 'oAuthPrompt';
 const CHOICE_PROMPT = 'choicePrompt';
 const TEXT_PROMPT = 'textPrompt';
-const SELECT_GLOSSARY_TERM_DIALOG = 'selectGlossaryTermDialog';
 const SEARCH_GLOSSARY_TERM_DIALOG = 'searchGlossaryTermDialog';
+const SELECT_GLOSSARY_TERM_DIALOG = 'selectGlossaryTermDialog';
+const SELECT_GLOSSARY_TERM_RESULT_DIALOG = 'selectGlossaryTermResultDialog'
 const SEARCH_REPORT_DIALOG = 'searchReportDialog';
+const SELECT_REPORT_DIALOG = 'selectReportDialog';
+const SELECT_REPORT_RESULT_DIALOG = 'selectReportResultDialog';
 const GUEST_LOG_IN_DIALOG = 'guestLogInDialog';
 
 const WelcomeCard = require('../bots/resources/welcomeCard.json');
@@ -30,15 +33,10 @@ class MainDialog extends MenuDialog {
         super('MainDialog');
 
         this.dialogHelper = new DialogHelper();
-        this.selectReportDialog = new SelectReportDialog();
-        this.selectReportResultDialog = new SelectReportResultDialog();
-        this.selectGlossaryTermDialog = new SelectGlossaryTermDialog();
-        this.selectGlossaryTermResultDialog = new SelectGlossaryTermResultDialog();
 
         this.state = {
           statusUpdate: false,
         };
-
 
         this.addDialog(new ChoicePrompt(CHOICE_PROMPT))
             .addDialog(new OAuthPrompt(OAUTH_PROMPT, {
@@ -49,7 +47,11 @@ class MainDialog extends MenuDialog {
             }))
             .addDialog(new TextPrompt(TEXT_PROMPT))
             .addDialog(new SearchGlossaryTermDialog(SEARCH_GLOSSARY_TERM_DIALOG))
+            .addDialog(new SelectGlossaryTermDialog(SELECT_GLOSSARY_TERM_DIALOG))
+            .addDialog(new SelectGlossaryTermResultDialog(SELECT_GLOSSARY_TERM_RESULT_DIALOG))
             .addDialog(new SearchReportDialog(SEARCH_REPORT_DIALOG))
+            .addDialog(new SelectReportDialog(SELECT_REPORT_DIALOG))
+            .addDialog(new SelectReportResultDialog(SELECT_REPORT_RESULT_DIALOG))
             .addDialog(new GuestLogInDialog(GUEST_LOG_IN_DIALOG))
             .addDialog(new WaterfallDialog(MAIN_WATERFALL_DIALOG, [
                 this.promptStep.bind(this),
@@ -83,7 +85,7 @@ class MainDialog extends MenuDialog {
 
       switch (step.context.activity.text) {
         case 'Log In As Guest':
-            console.log(step.context.activity.text)
+            //console.log(step.context.activity.text)
             return await step.beginDialog(GUEST_LOG_IN_DIALOG);
             break;
         default:
@@ -102,82 +104,45 @@ class MainDialog extends MenuDialog {
           if (step.context.activity.value){
 
             if (step.context.activity.value.action === 'report_name_selector_value'){
-
-              await this.selectReportResultDialog.onTurn(step.context);
+              return await step.beginDialog(SELECT_REPORT_RESULT_DIALOG);
             }
 
             if (step.context.activity.value.action === 'glossary_term_selector_value'){
-
-              await this.selectGlossaryTermResultDialog.onTurn(step, step.context, tokenResponse);
+              return await step.beginDialog(SELECT_GLOSSARY_TERM_RESULT_DIALOG, { tokenResponse: tokenResponse});
             }
 
-              //console.log(step.context.activity.value.action)
-              return await step.endDialog();
+            return await step.endDialog();
           }else{
 
             switch (step.context.activity.text) {
             case 'Select A Term':
-                return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
+                return await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
                 break;
             case 'See All Terms':
-                return await this.selectGlossaryTermDialog.destinationStep(step, tokenResponse, step.context.activity.text);
+                return await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
                 break;
             case 'Glossary Search':
-                //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
                 return await step.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
                 break;
             case 'Select a Report':
-                //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
-                return await this.selectReportDialog.destinationStep(step);
+                return await step.beginDialog(SELECT_REPORT_DIALOG);
                 break;
             case 'Search Reports':
-                //return await this.selectGlossaryTermDialog.searchStep(step, tokenResponse);
                 return await step.beginDialog(SEARCH_REPORT_DIALOG);
                 break;
-
-
             default:
-                //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
-
-                console.log(step.context.activity.text)
-
-                // console.log(this.state.statusUpdate)
-                //
-                // if(this.state.statusUpdate === false){
-                //
-                //   await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Dont Forget about the Chilli Cook-off and Halloween Costume Contest','Its on Thursday, October 31st from 11am to 1pm, in the LPN 1st Floor Atrium')] });
-                //   await step.context.sendActivity({ attachments: [this.dialogHelper.createImageCard()] });
-                //   await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Im dressing up as a BOT for the Costume Contest!','')] });
-                //   this.state.statusUpdate = true
-                //
-                // }
-
-
                 await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
 
                 return await step.prompt(CHOICE_PROMPT, {
                     prompt: '',
                     choices: ChoiceFactory.toChoices(['Who Am I?', 'Glossary', 'Cognos Reports'])
                 });
-
-                // return await step.prompt(CHOICE_PROMPT, {
-                //     prompt: '',
-                //     choices: ChoiceFactory.toChoices(['Log In'])
-                // });
-
             }
-
           }
-
-
-
         }else{
-
           await step.context.sendActivity('Login was not successful please try again.');
           return await step.endDialog();
-
         }
-
     }
 
     async commandStep(step) {
@@ -203,40 +168,25 @@ class MainDialog extends MenuDialog {
             // If we have the token use the user is authenticated so we may use it to make API calls.
             if (tokenResponse && tokenResponse.token) {
 
-                //console.log(step.values.command)
-
-                //const parts = (step.values['command'] || '').toLowerCase().split(' ');
-
-                //const command = parts[0];
-
                 switch (step.values.command.value) {
 
                 case 'Who Am I?':
                     await OAuthHelpers.listMe(step.context, tokenResponse);
                     break;
                 case 'Glossary':
-                    //await this.selectGlossaryTermDialog.filterStep(step);
-                    //await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG);
-
                     await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select A Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
-
                     await step.prompt(CHOICE_PROMPT, {
                         prompt: '',
                         choices: ChoiceFactory.toChoices(['Select A Term', 'See All Terms', 'Glossary Search'])
                     });
-
                     break;
                 case 'Cognos Reports':
-
                     await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select a Report or Search Reports?','')] });
-
                     await step.prompt(CHOICE_PROMPT, {
                         prompt: '',
                         choices: ChoiceFactory.toChoices(['Select a Report', 'Search Reports'])
                     });
-
                     break;
-
                 default:
                     //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
                 }

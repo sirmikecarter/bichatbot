@@ -5,14 +5,12 @@ const { DialogHelper } = require('./helpers/dialogHelper');
 const { SimpleGraphClient } = require('./helpers/simple-graph-client');
 const { OAuthHelpers } = require('./helpers/oAuthHelpers');
 var arraySort = require('array-sort');
+const axios = require('axios');
 
 const CONFIRM_PROMPT = 'confirmPrompt';
 const CHOICE_PROMPT = 'CHOICE_PROMPT';
 const TEXT_PROMPT = 'textPrompt';
 const WATERFALL_DIALOG = 'waterfallDialog';
-const OAUTH_PROMPT = 'OAuthPrompt';
-
-const axios = require('axios');
 
 class SelectGlossaryTermDialog extends ComponentDialog {
     constructor(id) {
@@ -26,18 +24,52 @@ class SelectGlossaryTermDialog extends ComponentDialog {
           userDivision: ''
         };
 
+
+        this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new ChoicePrompt(CHOICE_PROMPT))
+            .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
+            .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
+                this.destinationStep.bind(this)
+            ]));
+
+        this.initialDialogId = WATERFALL_DIALOG;
+    }
+
+    /**
+     * The run method handles the incoming activity (in the form of a TurnContext) and passes it through the dialog system.
+     * If no dialog is active, it will start the default dialog.
+     * @param {*} turnContext
+     * @param {*} accessor
+     */
+    async onTurn(turnContext, accessor) {
+        // Call QnA Maker and get results.
+        const dialogSet = new DialogSet(accessor);
+        dialogSet.add(this);
+
+        const dialogContext = await dialogSet.createContext(turnContext);
+        const results = await dialogContext.continueDialog();
+        await dialogContext.beginDialog(this.id);
+
+        if (turnContext.activity.value){
+
+          console.log(turnContext.activity.value)
+
+        }
     }
 
     /**
      * If a destination city has not been provided, prompt for one.
      */
-    async destinationStep(stepContext, tokenResponse, view) {
+    async destinationStep(stepContext) {
 
+      var tokenResponse = stepContext._info.options.tokenResponse
       var self = this;
       self.state.reportNameSearch = []
       self.state.termArray = []
 
-      switch (view) {
+      console.log(stepContext.context.activity.text)
+
+      switch (stepContext.context.activity.text) {
 
       case 'Select A Term':
 
@@ -254,6 +286,7 @@ class SelectGlossaryTermDialog extends ComponentDialog {
       await stepContext.context.sendActivity(reply);
 
       return await stepContext.endDialog('End Dialog');
+
     }
 
 }

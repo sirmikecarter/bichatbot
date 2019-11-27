@@ -192,8 +192,8 @@ class SelectSportsTeamDialog extends ComponentDialog {
           // if(self.state.teamId !== '' && self.state.teamIdMLB !== '' ){
           //   console.log(self.state.teamId)
           //   console.log(self.state.teamIdMLB)
-          //   return await innerDc.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamId, team2: self.state.teamIdMLB});
-          //   //return await this.selectSportsTeamDialog.destinationStep(innerDc, self.state.teamId, self.state.teamIdMLB);
+          //   return await stepContext.beginDialog(SELECT_SPORTS_TEAM_DIALOG, { team1: self.state.teamId, team2: self.state.teamIdMLB});
+          //   //return await this.selectSportsTeamDialog.destinationStep(stepContext, self.state.teamId, self.state.teamIdMLB);
           // }
 
           // console.log(self.state.teamId)

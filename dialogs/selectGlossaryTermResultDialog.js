@@ -1,31 +1,24 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-const { QnAMaker } = require('botbuilder-ai');
+const { QnAMaker, LuisRecognizer } = require('botbuilder-ai');
+const { ComponentDialog, ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet} = require('botbuilder-dialogs');
+const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const { LuisHelper } = require('./helpers/luisHelper');
-const { LuisRecognizer } = require('botbuilder-ai');
 const { DialogHelper } = require('./helpers/dialogHelper');
 const { SimpleGraphClient } = require('./helpers/simple-graph-client');
-const { ConfirmPrompt, TextPrompt, WaterfallDialog, ChoiceFactory, ChoicePrompt, DialogSet } = require('botbuilder-dialogs');
-const { AttachmentLayoutTypes, CardFactory, MessageFactory } = require('botbuilder-core');
 const axios = require('axios');
 var arraySort = require('array-sort');
 
-// Name of the QnA Maker service in the .bot file.
-const QNA_CONFIGURATION = 'q_sample-qna';
-// CONSTS used in QnA Maker query. See [here](https://docs.microsoft.com/en-us/azure/bot-service/bot-builder-howto-qna?view=azure-bot-service-4.0&tabs=cs) for additional info
-const QNA_TOP_N = 1;
-const QNA_CONFIDENCE_THRESHOLD = 0.5;
+const CONFIRM_PROMPT = 'confirmPrompt';
+const CHOICE_PROMPT = 'CHOICE_PROMPT';
+const TEXT_PROMPT = 'textPrompt';
+const WATERFALL_DIALOG = 'waterfallDialog';
 
-
-class SelectGlossaryTermResultDialog {
-    /**
-     *
-
-     */
-    constructor() {
+class SelectGlossaryTermResultDialog extends ComponentDialog {
+    constructor(id) {
+        super(id || 'selectGlossaryTermResultDialog');
 
         this.dialogHelper = new DialogHelper();
-
 
         this.state = {
           termArray: [],
@@ -34,131 +27,152 @@ class SelectGlossaryTermResultDialog {
           glossaryDefinedBy: '',
           glossaryOutput: ''
         };
+
+
+        this.addDialog(new TextPrompt(TEXT_PROMPT))
+            .addDialog(new ChoicePrompt(CHOICE_PROMPT))
+            .addDialog(new ConfirmPrompt(CONFIRM_PROMPT))
+            .addDialog(new WaterfallDialog(WATERFALL_DIALOG, [
+                this.destinationStep.bind(this)
+            ]));
+
+        this.initialDialogId = WATERFALL_DIALOG;
     }
 
     /**
-     *
-     * @param {TurnContext} turn context object
+     * The run method handles the incoming activity (in the form of a TurnContext) and passes it through the dialog system.
+     * If no dialog is active, it will start the default dialog.
+     * @param {*} turnContext
+     * @param {*} accessor
      */
-    async onTurn(stepContext, turnContext, tokenResponse) {
+    async onTurn(turnContext, accessor) {
         // Call QnA Maker and get results.
-        //console.log(turnContext.activity.value.report_name_selector_value)
+        const dialogSet = new DialogSet(accessor);
+        dialogSet.add(this);
 
+        const dialogContext = await dialogSet.createContext(turnContext);
+        const results = await dialogContext.continueDialog();
+        await dialogContext.beginDialog(this.id);
 
+        if (turnContext.activity.value){
 
-        var glossaryTermQuery = "'" + turnContext.activity.value.glossary_term_selector_value + "'"
+          console.log(turnContext.activity.value)
 
-        const client = new SimpleGraphClient(tokenResponse.token);
-        const me = await client.getMe();
+        }
+    }
 
-        const definedByToken = me.jobTitle.toLowerCase()
+    /**
+     * If a destination city has not been provided, prompt for one.
+     */
+    async destinationStep(stepContext) {
 
-        var self = this;
-        self.state.termArray = []
+      var tokenResponse = stepContext._info.options.tokenResponse
+      var self = this;
 
-        await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
-                { params: {
-                  'api-version': '2019-05-06',
-                  '$filter': 'search.ismatch(' + glossaryTermQuery + ',' + '\'questions\'' + ')'
-                  },
-                headers: {
-                  'api-key': process.env.GlossarySearchServiceKey,
-                  'ContentType': 'application/json'
+      var glossaryTermQuery = "'" + stepContext.context.activity.value.glossary_term_selector_value + "'"
+
+      const client = new SimpleGraphClient(tokenResponse.token);
+      const me = await client.getMe();
+
+      const definedByToken = me.jobTitle.toLowerCase()
+
+      var self = this;
+      self.state.termArray = []
+
+      await axios.get(process.env.GlossarySearchService +'/indexes/'+ process.env.GlossarySearchServiceIndex + '/docs?',
+              { params: {
+                'api-version': '2019-05-06',
+                '$filter': 'search.ismatch(' + glossaryTermQuery + ',' + '\'questions\'' + ')'
+                },
+              headers: {
+                'api-key': process.env.GlossarySearchServiceKey,
+                'ContentType': 'application/json'
+        }
+
+      }).then(response => {
+
+        if (response){
+
+          var itemCount = response.data.value.length
+
+          var itemArray = self.state.termArray.slice();
+
+          for (var i = 0; i < itemCount; i++)
+          {
+                const glossaryTerm = response.data.value[i].questions[0]
+                const glossaryDescription = response.data.value[i].answer
+                const glossaryDefinedBy = response.data.value[i].metadata_definedby.toUpperCase()
+                const glossaryOutput = response.data.value[i].metadata_output.toUpperCase()
+                const glossaryRelated = response.data.value[i].metadata_related
+
+                if (itemArray.indexOf(glossaryTerm) === -1)
+                {
+
+                  if (stepContext.context.activity.value.glossary_term_selector_value === glossaryTerm ){
+                    itemArray.push({'first': 'a', 'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput, 'related': glossaryRelated})
+                  }else{
+                    itemArray.push({'first': 'z', 'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput, 'related': glossaryRelated})
+                  }
+                }
+
           }
 
-        }).then(response => {
-
-          if (response){
-
-            var itemCount = response.data.value.length
-
-            var itemArray = self.state.termArray.slice();
-
-            for (var i = 0; i < itemCount; i++)
-            {
-                  const glossaryTerm = response.data.value[i].questions[0]
-                  const glossaryDescription = response.data.value[i].answer
-                  const glossaryDefinedBy = response.data.value[i].metadata_definedby.toUpperCase()
-                  const glossaryOutput = response.data.value[i].metadata_output.toUpperCase()
-                  const glossaryRelated = response.data.value[i].metadata_related
-
-                  if (itemArray.indexOf(glossaryTerm) === -1)
-                  {
-
-                    if (turnContext.activity.value.glossary_term_selector_value === glossaryTerm ){
-                      itemArray.push({'first': 'a', 'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput, 'related': glossaryRelated})
-                    }else{
-                      itemArray.push({'first': 'z', 'glossaryterm': glossaryTerm, 'description': glossaryDescription, 'definedby': glossaryDefinedBy, 'output': glossaryOutput, 'related': glossaryRelated})
-                    }
-                  }
-
-            }
-
-            self.state.termArray = arraySort(itemArray, 'first')
+          self.state.termArray = arraySort(itemArray, 'first')
 
 
-         }
+       }
 
-        }).catch((error)=>{
-               console.log(error);
-        });
+      }).catch((error)=>{
+             console.log(error);
+      });
 
-        if(definedByToken.toUpperCase() === self.state.termArray[0].definedby){
-          await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...This Term Is Defined By Your Area:','')] });
-        }else{
-          await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...This Term Is NOT Defined By Your Area:','')] });
-        }
+      if(definedByToken.toUpperCase() === self.state.termArray[0].definedby){
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...This Term Is Defined By Your Area:','')] });
+      }else{
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...This Term Is NOT Defined By Your Area:','')] });
+      }
 
-        await turnContext.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[0].definedby, self.state.termArray[0].glossaryterm, self.state.termArray[0].description, self.state.termArray[0].definedby, self.state.termArray[0].output, self.state.termArray[0].related)] });
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[0].definedby, self.state.termArray[0].glossaryterm, self.state.termArray[0].description, self.state.termArray[0].definedby, self.state.termArray[0].output, self.state.termArray[0].related)] });
 
 
 
-        // console.log(self.state.termArray.length)
-        // console.log(self.state.termArray)
+      // console.log(self.state.termArray.length)
+      // console.log(self.state.termArray)
 
-        if (self.state.termArray.length > 1){
-          console.log(self.state.termArray.length)
-          await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Also Found a Similar Term:','')] });
+      if (self.state.termArray.length > 1){
+        console.log(self.state.termArray.length)
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Also Found a Similar Term:','')] });
 
-          switch (self.state.termArray.length) {
+        switch (self.state.termArray.length) {
 
-          case 2:
+        case 2:
 
-          await turnContext.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[1].definedby, self.state.termArray[1].glossaryterm, self.state.termArray[1].description, self.state.termArray[1].definedby, self.state.termArray[1].output, self.state.termArray[1].related)] });
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[1].definedby, self.state.termArray[1].glossaryterm, self.state.termArray[1].description, self.state.termArray[1].definedby, self.state.termArray[1].output, self.state.termArray[1].related)] });
 
-          break;
+        break;
 
 
-          case 3:
+        case 3:
 
-          await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[1].definedby, self.state.termArray[1].glossaryterm, self.state.termArray[1].description, self.state.termArray[1].definedby, self.state.termArray[1].output, self.state.termArray[1].related),
-              this.dialogHelper.createGlossaryCard(self.state.termArray[2].definedby, self.state.termArray[2].glossaryterm, self.state.termArray[2].description, self.state.termArray[2].definedby, self.state.termArray[2].output, self.state.termArray[2].related)],
-          attachmentLayout: AttachmentLayoutTypes.Carousel });
+        await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createGlossaryCard(self.state.termArray[1].definedby, self.state.termArray[1].glossaryterm, self.state.termArray[1].description, self.state.termArray[1].definedby, self.state.termArray[1].output, self.state.termArray[1].related),
+            this.dialogHelper.createGlossaryCard(self.state.termArray[2].definedby, self.state.termArray[2].glossaryterm, self.state.termArray[2].description, self.state.termArray[2].definedby, self.state.termArray[2].output, self.state.termArray[2].related)],
+        attachmentLayout: AttachmentLayoutTypes.Carousel });
 
-          break;
+        break;
 
         }
 
+      }
 
+      await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
 
-        }
+      var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
+      await stepContext.context.sendActivity(reply);
 
-
-
-
-
-        // var myTimer = setInterval(function(){ console.log('waiting'); }, 2000);
-        // clearInterval(myTimer)
-        await turnContext.sendActivity({ attachments: [this.dialogHelper.createBotCard('...Is there anything else I can help you with?','')] });
-
-        var reply = MessageFactory.suggestedActions(['Main Menu', 'Logout']);
-        return await turnContext.sendActivity(reply);
-
-
-
-        //return await turnContext.endDialog('End Dialog');
+      return await stepContext.endDialog('End Dialog');
 
     }
-};
+
+}
 
 module.exports.SelectGlossaryTermResultDialog = SelectGlossaryTermResultDialog;
