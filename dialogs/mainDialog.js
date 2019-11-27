@@ -81,72 +81,72 @@ class MainDialog extends MenuDialog {
         }
     }
 
-    async promptStep(step) {
+    async promptStep(stepContext) {
 
-      switch (step.context.activity.text) {
+      switch (stepContext.context.activity.text) {
         case 'Log In As Guest':
-            //console.log(step.context.activity.text)
-            return await step.beginDialog(GUEST_LOG_IN_DIALOG);
+            //console.log(stepContext.context.activity.text)
+            return await stepContext.beginDialog(GUEST_LOG_IN_DIALOG);
             break;
         default:
-            return await step.beginDialog(OAUTH_PROMPT);
+            return await stepContext.beginDialog(OAUTH_PROMPT);
       }
 
     }
 
-    async loginStep(step) {
+    async loginStep(stepContext) {
         // Get the token from the previous step. Note that we could also have gotten the
         // token directly from the prompt itself. There is an example of this in the next method.
-        const tokenResponse = step.result;
+        const tokenResponse = stepContext.result;
 
         if (tokenResponse) {
 
-          if (step.context.activity.value){
+          if (stepContext.context.activity.value){
 
-            if (step.context.activity.value.action === 'report_name_selector_value'){
-              return await step.beginDialog(SELECT_REPORT_RESULT_DIALOG);
+            if (stepContext.context.activity.value.action === 'report_name_selector_value'){
+              return await stepContext.beginDialog(SELECT_REPORT_RESULT_DIALOG);
             }
 
-            if (step.context.activity.value.action === 'glossary_term_selector_value'){
-              return await step.beginDialog(SELECT_GLOSSARY_TERM_RESULT_DIALOG, { tokenResponse: tokenResponse});
+            if (stepContext.context.activity.value.action === 'glossary_term_selector_value'){
+              return await stepContext.beginDialog(SELECT_GLOSSARY_TERM_RESULT_DIALOG, { tokenResponse: tokenResponse});
             }
 
-            return await step.endDialog();
+            return await stepContext.endDialog();
           }else{
 
-            switch (step.context.activity.text) {
+            switch (stepContext.context.activity.text) {
             case 'Select A Term':
-                return await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
+                return await stepContext.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
                 break;
             case 'See All Terms':
-                return await step.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
+                return await stepContext.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
                 break;
             case 'Glossary Search':
-                return await step.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
+                return await stepContext.beginDialog(SEARCH_GLOSSARY_TERM_DIALOG);
                 break;
             case 'Select a Report':
-                return await step.beginDialog(SELECT_REPORT_DIALOG);
+                return await stepContext.beginDialog(SELECT_REPORT_DIALOG);
                 break;
             case 'Search Reports':
-                return await step.beginDialog(SEARCH_REPORT_DIALOG);
+                return await stepContext.beginDialog(SEARCH_REPORT_DIALOG);
                 break;
             default:
-                await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
+                await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('What would you like to do?','')] });
 
-                return await step.prompt(CHOICE_PROMPT, {
+                return await stepContext.prompt(CHOICE_PROMPT, {
                     prompt: '',
                     choices: ChoiceFactory.toChoices(['Who Am I?', 'Glossary', 'Cognos Reports'])
                 });
             }
           }
         }else{
-          await step.context.sendActivity('Login was not successful please try again.');
-          return await step.endDialog();
+          await stepContext.context.sendActivity('Login was not successful please try again.');
+          return await stepContext.endDialog();
         }
     }
 
-    async commandStep(step) {
-        step.values['command'] = step.result;
+    async commandStep(stepContext) {
+        stepContext.values['command'] = stepContext.result;
         // Call the prompt again because we need the token. The reasons for this are:
         // 1. If the user is already logged in we do not need to store the token locally in the bot and worry
         // about refreshing it. We can always just call the prompt again to get the token.
@@ -155,47 +155,47 @@ class MainDialog extends MenuDialog {
         //
         // There is no reason to store the token locally in the bot because we can always just call
         // the OAuth prompt to get the token or get a new token if needed.
-        return await step.beginDialog(OAUTH_PROMPT);
+        return await stepContext.beginDialog(OAUTH_PROMPT);
     }
 
-    async processStep(step) {
-        if (step.result) {
+    async processStep(stepContext) {
+        if (stepContext.result) {
             // We do not need to store the token in the bot. When we need the token we can
             // send another prompt. If the token is valid the user will not need to log back in.
             // The token will be available in the Result property of the task.
-            const tokenResponse = step.result;
+            const tokenResponse = stepContext.result;
 
             // If we have the token use the user is authenticated so we may use it to make API calls.
             if (tokenResponse && tokenResponse.token) {
 
-                switch (step.values.command.value) {
+                switch (stepContext.values.command.value) {
 
                 case 'Who Am I?':
-                    await OAuthHelpers.listMe(step.context, tokenResponse);
+                    await OAuthHelpers.listMe(stepContext.context, tokenResponse);
                     break;
                 case 'Glossary':
-                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select A Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
-                    await step.prompt(CHOICE_PROMPT, {
+                    await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select A Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
+                    await stepContext.prompt(CHOICE_PROMPT, {
                         prompt: '',
                         choices: ChoiceFactory.toChoices(['Select A Term', 'See All Terms', 'Glossary Search'])
                     });
                     break;
                 case 'Cognos Reports':
-                    await step.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select a Report or Search Reports?','')] });
-                    await step.prompt(CHOICE_PROMPT, {
+                    await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select a Report or Search Reports?','')] });
+                    await stepContext.prompt(CHOICE_PROMPT, {
                         prompt: '',
                         choices: ChoiceFactory.toChoices(['Select a Report', 'Search Reports'])
                     });
                     break;
                 default:
-                    //await step.context.sendActivity(`Your token is ${ tokenResponse.token }`);
+                    //await stepContext.context.sendActivity(`Your token is ${ tokenResponse.token }`);
                 }
             }
         } else {
-            await step.context.sendActivity('We couldn\'t log you in. Please try again later.');
+            await stepContext.context.sendActivity('We couldn\'t log you in. Please try again later.');
         }
 
-        return await step.endDialog();
+        return await stepContext.endDialog();
     }
 }
 
