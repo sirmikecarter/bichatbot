@@ -71,7 +71,7 @@ class SelectGlossaryTermDialog extends ComponentDialog {
 
       switch (stepContext.context.activity.text) {
 
-      case 'Select A Term':
+      case 'Select a Term':
 
       const client = new SimpleGraphClient(tokenResponse.token);
       const me = await client.getMe();

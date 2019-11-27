@@ -115,7 +115,7 @@ class MainDialog extends MenuDialog {
           }else{
 
             switch (stepContext.context.activity.text) {
-            case 'Select A Term':
+            case 'Select a Term':
                 return await stepContext.beginDialog(SELECT_GLOSSARY_TERM_DIALOG, { tokenResponse: tokenResponse});
                 break;
             case 'See All Terms':
@@ -174,10 +174,10 @@ class MainDialog extends MenuDialog {
                     await OAuthHelpers.listMe(stepContext.context, tokenResponse);
                     break;
                 case 'Glossary':
-                    await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select A Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
+                    await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard('Select a Term in the Glossary, See All Terms in the Glossary or Search the Glossary?','')] });
                     await stepContext.prompt(CHOICE_PROMPT, {
                         prompt: '',
-                        choices: ChoiceFactory.toChoices(['Select A Term', 'See All Terms', 'Glossary Search'])
+                        choices: ChoiceFactory.toChoices(['Select a Term', 'See All Terms', 'Glossary Search'])
                     });
                     break;
                 case 'Cognos Reports':
