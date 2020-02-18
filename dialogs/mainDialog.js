@@ -89,7 +89,8 @@ class MainDialog extends MenuDialog {
             return await stepContext.beginDialog(GUEST_LOG_IN_DIALOG);
             break;
         default:
-            return await stepContext.beginDialog(OAUTH_PROMPT);
+            //return await stepContext.beginDialog(OAUTH_PROMPT);
+            return await stepContext.endDialog();
       }
 
     }

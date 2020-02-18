@@ -131,7 +131,9 @@ class MenuDialog extends ComponentDialog {
                   if (!qnaResult || qnaResult.length === 0 || !qnaResult[0].answer){
                     //await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
                   }else{
-                    await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
+                    //await stepContext.context.sendActivity({ attachments: [this.dialogHelper.createBotCard(String(qnaResult[0].answer),'')] });
+                    await stepContext.context.sendActivity(String(qnaResult[0].answer));
+
                   }
 
                   break;
